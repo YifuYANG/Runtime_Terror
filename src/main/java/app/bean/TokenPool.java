@@ -23,4 +23,8 @@ public class TokenPool {
         pool.remove(token);
     }
 
+    public boolean contains(String token) {
+        return pool.containsKey(token);
+    }
+
 }
