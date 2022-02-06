@@ -43,6 +43,13 @@ public class example {
         return token;
     }
 
+    @PostMapping("/logout")
+    public String logoutExample(@RequestHeader("token") String token) {
+        long userId = tokenPool.getUserIdByToken(token);
+        tokenPool.logout(token);
+        return userId + " logged out!";
+    }
+
     /**
      * Always use @RestrictUserAccess annotation for restricted api
      * @param token token is stored in http header & it is supposed to be the first parameter
