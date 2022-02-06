@@ -1,5 +1,6 @@
-package app.model;
+package app.dao;
 
+import app.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 
