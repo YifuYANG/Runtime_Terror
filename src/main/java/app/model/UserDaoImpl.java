@@ -1,7 +1,6 @@
-package model;
+package app.model;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-
 import javax.sql.DataSource;
 
 public class UserDaoImpl implements UserDao {

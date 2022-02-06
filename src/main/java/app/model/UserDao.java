@@ -1,4 +1,4 @@
-package model;
+package app.model;
 
 public interface UserDao {
     public int registerUser(User user);
