@@ -5,6 +5,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+import static java.util.Calendar.*;
 
 @Entity
 @Table(name = "Users")
@@ -13,13 +20,14 @@ public class User {
     @GeneratedValue
     private Long userId;
     @NotBlank
-    private String first_name, last_name, password, email, nationality, date_of_birth;
+    private String first_name, last_name, password, email, nationality;
+    private Date date_of_birth;
     private long PPS_number, phone_number;
 
     public User() {super();}
     public User(long userId, String first_name, String last_name, String password,
                 String email_address, String nationality, String date_of_birth,
-                long PPS_number, long phone_number) {
+                long PPS_number, long phone_number) throws ParseException {
         super();
         this.userId = userId;
         this.first_name = first_name;
@@ -27,7 +35,7 @@ public class User {
         this.password = password;
         this.email = email_address;
         this.nationality = nationality;
-        this.date_of_birth = date_of_birth;
+        setDate_of_birth(date_of_birth);
         this.PPS_number = PPS_number;
         this.phone_number = phone_number;
     }
@@ -80,12 +88,15 @@ public class User {
         this.nationality = nationality;
     }
 
-    public String getDate_of_birth() {
+    public Date getDate_of_birth() {
         return date_of_birth;
     }
 
-    public void setDate_of_birth(String date_of_birth) {
-        this.date_of_birth = date_of_birth;
+    public void setDate_of_birth(String date_of_birth) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+
+        Date date = formatter.parse(date_of_birth);
+        this.date_of_birth = date;
     }
 
     public long getPPS_number() {
@@ -103,4 +114,5 @@ public class User {
     public void setPhone_number(long phone_number) {
         this.phone_number = phone_number;
     }
+
 }
