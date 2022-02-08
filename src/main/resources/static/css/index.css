@@ -1,0 +1,49 @@
+.centered_content {
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.main_header {
+    text-align: center;
+}
+
+.nav_bar {
+    width: 100%;
+    text-align: center;
+    margin-top: 5%;
+}
+
+.nav_bar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav_bar li {
+    display: inline;
+}
+
+.nav_bar button {
+    width: 15%;
+}
+
+.appointment_form {
+    margin-right: auto;
+    margin-left: auto;
+    padding: 35px;
+    width: fit-content;
+    margin-top: 10%;
+    border: black solid 3px;
+}
+
+.form_line {
+    padding: 5%;
+    text-align: left;
+}
+
+.submitBtn {
+    margin-top: 10%;
+    width: 30%;
+}

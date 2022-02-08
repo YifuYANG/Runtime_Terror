@@ -18,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/example")
-public class example {
+public class ExampleController {
 
     @Autowired
     private TokenPool tokenPool;
