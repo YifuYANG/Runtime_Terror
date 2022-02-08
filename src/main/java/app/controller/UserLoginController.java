@@ -5,12 +5,16 @@ import app.bean.TokenPool;
 import app.model.User;
 import app.repository.UserRepository;
 import app.vo.LoginForm;
+import com.oracle.tools.packager.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -22,27 +26,26 @@ public class UserLoginController {
     private UserRepository userRepository;
 
     @PostMapping("/login")
-    public String loginExample(@RequestBody LoginForm loginForm) {
-        /**
-         * we need to check if userDetail is correct
-         * Then we shouldn't allow a user logins twice
-         */
+    public Map<String, Object> loginExample(@RequestBody LoginForm loginForm) {
+        Map<String, Object> map = new HashMap<>(3);
         User user = userRepository.findByUserEmail(loginForm.getUserEmail());
-        System.out.println(loginForm.getUserEmail());
+        log.info(loginForm.getUserEmail());
         if(user == null){
-            return "Account does not exist.";
-        } if(tokenPool.containsUserId(user.getUserId())) {
-            return "You can't login twice.";
+            map.put("status", "fail");
+            map.put("msg", "Account does not exist.");
         } else if(!loginForm.getPassword().equals(user.getPassword())){
-            return "Wrong username or password.";
+            map.put("status", "fail");
+            map.put("msg", "Wrong username or password.");
+        } else if(tokenPool.containsUserId(user.getUserId())) {
+            map.put("status", "fail");
+            map.put("msg", "You can not login twice");
         } else {
-            /**
-             * Issue a unique token to user/front-end app
-             */
             String token = UUID.randomUUID().toString();
             tokenPool.login(user.getUserId(), token);
-            return token;
+            map.put("status", "success");
+            map.put("token", token);
         }
+        return map;
     }
 
     @PostMapping("/logout")
