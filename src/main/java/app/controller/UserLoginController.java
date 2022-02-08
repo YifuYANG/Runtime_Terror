@@ -1,24 +1,20 @@
 package app.controller;
 
-
 import app.bean.TokenPool;
 import app.model.User;
 import app.repository.UserRepository;
 import app.vo.LoginForm;
-import com.oracle.tools.packager.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
-@RestController
+@Controller
 public class UserLoginController {
     @Autowired
     private TokenPool tokenPool;
@@ -26,7 +22,8 @@ public class UserLoginController {
     private UserRepository userRepository;
 
     @PostMapping("/login")
-    public Map<String, Object> loginExample(@RequestBody LoginForm loginForm) {
+    @ResponseBody
+    public Map<String, Object> login(@RequestBody LoginForm loginForm) {
         Map<String, Object> map = new HashMap<>(3);
         User user = userRepository.findByUserEmail(loginForm.getUserEmail());
         log.info(loginForm.getUserEmail());
@@ -49,9 +46,15 @@ public class UserLoginController {
     }
 
     @PostMapping("/logout")
-    public String logoutExample(@RequestHeader("token") String token) {
+    @ResponseBody
+    public String logout(@RequestHeader("token") String token) {
         long userId = tokenPool.getUserIdByToken(token);
         tokenPool.logout(token);
         return userId + " logged out successfully";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
     }
 }
