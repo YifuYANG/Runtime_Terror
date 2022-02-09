@@ -77,7 +77,7 @@
                                           <label for="ADMIN" class="control-label">Administrator</label>
                                           <input type="radio" id="admin" class="form-radio" th:field="*{userLevel}" value="ADMIN"/>
                                           <label for="CLIENT" class="control-label">Client</label>
-                                          <input type="radio" id="client" class="form-radio" th:field="*{userLevel}" value="CLIENTx"/>
+                                          <input type="radio" id="client" class="form-radio" th:field="*{userLevel}" value="CLIENT"/>
                                           <p class="error-message" th:each="error : ${#fields.errors('userLevel')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
