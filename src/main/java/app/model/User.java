@@ -2,21 +2,19 @@ package app.model;
 
 import app.constant.UserLevel;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "Users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
     @Id
     @GeneratedValue
     private Long userId;
+
     @NotBlank
     private String first_name, last_name, password, email, nationality;
     private Date date_of_birth;

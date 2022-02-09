@@ -21,26 +21,26 @@ import static java.util.Calendar.*;
 import static java.util.Calendar.DATE;
 
 @Controller
-@RequestMapping("/registration")
+@RequestMapping("/register")
 public class UserController {
 
     @Autowired
     UserRepository userRepository;
 
     @ModelAttribute("user")
-    public UserRegistrationDto userRegistrationDto() {
-        return new UserRegistrationDto();
+    public User user() {
+        return new User();
     }
 
     @GetMapping
     public String showRegistrationForm(Model model) {
-        return "RegisterUser";
+        return "register";
     }
     // Create a new User
-    @PostMapping("/register")
+    @PostMapping
     public String RegisterUser(@ModelAttribute("newUser") User newUser) {
         userRepository.save(newUser);
-        return "redirect:/registration?success";
+        return "redirect:/register?success";
     }
     // Get All Users
     @GetMapping("/Users")
@@ -48,13 +48,6 @@ public class UserController {
 //        userRepository.save(new User(1, "Tom", "Furlong", "1234", "t@emal",
 //               "irish", "07-APR-1999", 909, 065));
         return userRepository.findAll();
-    }
-
-    @GetMapping("/addnew")
-    public String addNewUser(Model model) {
-        User user = new User();
-        model.addAttribute("user", user);
-        return "newuser";
     }
 
     // Get a Single User by ID
