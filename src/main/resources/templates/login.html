@@ -5,36 +5,35 @@
     <meta charset="UTF-8">
     <title>Sign In</title>
     <script type="text/javascript" th:src="@{/js/login.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}">
 </head>
 
 <body>
-    <form>
-        <table style="border: 20px; text-align: center; width: 55%">
-            <caption>Login</caption>
+    <div class="centered_content">
+        <form class="appointment_form">
+            <table style="border: 20px; text-align: center; width: 55%">
+                <caption>Login</caption>
 
-            <tr>
-                <td style="text-align: right">
-                    Email：
-                </td>
-                <td><input type="text" id="userEmail"/>
-                    <span id="text_1"></span>
-            </tr>
-            <tr>
-                <td style="text-align: right">
-                   Password：
-                </td>
-                <td><input type="Password" id="password"/>
-                    <span id="text_2"></span>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align: center; column-span: 2">
-                    <button type="reset" onclick="Login()" >Login</button>
-                    <button type="reset" onclick="Redirect()">Signup</button>
-                </td>
-            </tr>
-        </table>
-    </form>
+                <tr>
+                    <td style="text-align: right">
+                        Email：
+                    </td>
+                    <td><input type="text" id="userEmail"/>
+                        <span id="text_1"></span>
+                </tr>
+                <tr>
+                    <td style="text-align: right">
+                        Password：
+                    </td>
+                    <td><input type="Password" id="password"/>
+                        <span id="text_2"></span>
+                    </td>
+                </tr>
+            </table>
+            <button type="reset" onclick="Login()" >Login</button>
+            <button type="reset" onclick="Redirect()">Signup</button>
+        </form>
+    </div>
 </body>
 
 </html>
