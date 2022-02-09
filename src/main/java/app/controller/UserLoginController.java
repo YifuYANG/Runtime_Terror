@@ -26,7 +26,6 @@ public class UserLoginController {
     public Map<String, Object> login(@RequestBody LoginForm loginForm) {
         Map<String, Object> map = new HashMap<>(3);
         User user = userRepository.findByUserEmail(loginForm.getUserEmail());
-        log.info(loginForm.getUserEmail());
         if(user == null){
             map.put("status", "fail");
             map.put("msg", "Account does not exist.");
