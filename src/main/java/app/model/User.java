@@ -1,5 +1,7 @@
 package app.model;
 
+import app.constant.UserLevel;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -7,11 +9,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
-
-import static java.util.Calendar.*;
 
 @Entity
 @Table(name = "Users")
@@ -23,11 +21,12 @@ public class User {
     private String first_name, last_name, password, email, nationality;
     private Date date_of_birth;
     private long PPS_number, phone_number;
+    private UserLevel userLevel;
 
     public User() {super();}
     public User(long userId, String first_name, String last_name, String password,
                 String email_address, String nationality, String date_of_birth,
-                long PPS_number, long phone_number) throws ParseException {
+                long PPS_number, long phone_number, UserLevel userLevel) throws ParseException {
         super();
         this.userId = userId;
         this.first_name = first_name;
@@ -38,6 +37,7 @@ public class User {
         setDate_of_birth(date_of_birth);
         this.PPS_number = PPS_number;
         this.phone_number = phone_number;
+        this.userLevel = userLevel;
     }
 
     public Long getUserId() {
@@ -93,7 +93,7 @@ public class User {
     }
 
     public void setDate_of_birth(String date_of_birth) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
 
         Date date = formatter.parse(date_of_birth);
         this.date_of_birth = date;
@@ -115,4 +115,11 @@ public class User {
         this.phone_number = phone_number;
     }
 
+    public UserLevel getUserLevel() {
+        return userLevel;
+    }
+
+    public void setUserLevel(UserLevel userLevel) {
+        this.userLevel = userLevel;
+    }
 }

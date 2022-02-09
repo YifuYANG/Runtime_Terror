@@ -12,7 +12,7 @@ public class UserDaoImpl implements UserDao {
     }
     @Override
     public int registerUser(User user) {
-        String sql = "INSERT INTO USERS VALUES(?,?)";
+        String sql = "INSERT INTO Users VALUES(?,?)";
 
         try {
             int counter = jdbcTemplate.update(sql, new Object[] { user.getUserId(), user.getPassword() });
