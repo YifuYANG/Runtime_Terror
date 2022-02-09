@@ -11,7 +11,7 @@ function Login(){
             if (xhr.getResponseHeader('content-type') === 'application/json') {
                 var result = JSON.parse(xhr.responseText);
                 if (result.status === 'success') {
-                    document.cookie=result.token;
+                    sessionStorage.setItem("token", JSON.stringify(result.token));
                     window.location.href = "/"
                 } else {
                     alert(result.msg);
