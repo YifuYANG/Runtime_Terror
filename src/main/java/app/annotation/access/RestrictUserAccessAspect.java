@@ -2,6 +2,7 @@ package app.annotation.access;
 
 import app.bean.TokenPool;
 import app.constant.UserLevel;
+import app.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -18,7 +19,10 @@ import java.lang.reflect.Method;
 public class RestrictUserAccessAspect {
 
     @Autowired
-    TokenPool tokenPool;
+    private TokenPool tokenPool;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Around("@annotation(app.annotation.access.RestrictUserAccess)")
     public Object restrictUserAccess(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -26,9 +30,16 @@ public class RestrictUserAccessAspect {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         UserLevel requiredLevel = method.getAnnotation(RestrictUserAccess.class).requiredLevel();
-        String token = joinPoint.getArgs()[0].toString();
         try {
-            if(!tokenPool.containsToken(token)) throw new Exception("Access denied, please login first.");
+            String token = joinPoint.getArgs()[0].toString();
+            if(token == null || token.length() == 0) throw new Exception("Access denied, please login first.");
+            if(!tokenPool.containsToken(token)) throw new Exception("Access denied, invalid token.");
+            //If token is valid, we need to check whether user level satisfies required level
+            Long userId = tokenPool.getUserIdByToken(token);
+            if(requiredLevel == UserLevel.ANY)
+                return joinPoint.proceed();
+            if(userRepository.findById(userId).get().getUserLevel() != requiredLevel)
+                throw new Exception("Access denied, you have no privileges to access this content.");
             return joinPoint.proceed();
         } catch (Exception e) {
             return e.getMessage();

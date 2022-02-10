@@ -56,7 +56,7 @@ public class ExampleController {
      * @param userDetail
      * @return
      */
-    @RestrictUserAccess(requiredLevel = UserLevel.CLIENT)
+    @RestrictUserAccess(requiredLevel = UserLevel.ANY)
     @PostMapping("/restricted-api")
     public String restrictedUserAccessExample(@RequestHeader("token") String token, @RequestBody User userDetail) {
         return "Restricted API: Hi, " + userDetail.getFirst_name();
