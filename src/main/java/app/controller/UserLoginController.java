@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Controller
@@ -21,12 +23,16 @@ public class UserLoginController {
     @Autowired
     private UserRepository userRepository;
 
+    //login user
     @PostMapping("/login")
     @ResponseBody
     public Map<String, Object> login(@RequestBody LoginForm loginForm) {
         Map<String, Object> map = new HashMap<>(3);
         User user = userRepository.findByUserEmail(loginForm.getUserEmail());
-        if(user == null){
+        if (!emailValidator(loginForm.getUserEmail())){
+            map.put("status", "fail");
+            map.put("msg", "Wrong email type, dont hack me?!?!");
+        } else if(user == null){
             map.put("status", "fail");
             map.put("msg", "Account does not exist.");
         } else if(!loginForm.getPassword().equals(user.getPassword())){
@@ -55,5 +61,18 @@ public class UserLoginController {
     @GetMapping("/login")
     public String login() {
         return "login";
+    }
+
+
+    //validate email type at back end in case of attack may bypass front side
+    private Boolean emailValidator(String email){
+        String regex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    private Boolean passwordValidator(String password){
+        return true;
     }
 }
