@@ -20,26 +20,26 @@
             <li><button onclick="">Logout</button></li>
         </ul>
 
-        <form class="appointment_form">
+        <form class="appointment_form" onsubmit="submitAppointmentForm()">
             <div class="form_line">
                 <label>Please select which dose brand: </label>
                 <select id="dose_select">
-                    <option value="pfizer">Pfizer</option>
-                    <option value="moderna">Moderna</option>
+                    <option value="PFIZER">Pfizer</option>
+                    <option value="MODERNA">Moderna</option>
                 </select>
             </div>
 
             <div class="form_line">
                 <label>Please select date: </label>
-                <input type="date" min="2022-03-01" max="2022-03-31">
+                <input id="date_select" type="date" min="2022-03-01" max="2022-03-31" required>
             </div>
 
             <div class="form_line">
                 <label>Please select vaccination center: </label>
                 <select id="center_select">
-                    <option value="ucd">UCD Campus</option>
-                    <option value="city_west">City West</option>
-                    <option value="croke_park">Croke Park</option>
+                    <option value="UCD">UCD Campus</option>
+                    <option value="CITY_WEST">City West</option>
+                    <option value="CROKE_PARK">Croke Park</option>
                 </select>
             </div>
 

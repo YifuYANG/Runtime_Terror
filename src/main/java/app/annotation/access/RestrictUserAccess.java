@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface RestrictUserAccess {
 
-    UserLevel requiredLevel() default UserLevel.CLIENT;
+    UserLevel requiredLevel() default UserLevel.ANY;
 
 }
