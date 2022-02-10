@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -17,7 +18,7 @@ public class User {
 
     @NotBlank
     private String first_name, last_name, password, email, nationality;
-    private Date date_of_birth;
+    private LocalDate date_of_birth;
     private long PPS_number, phone_number;
     private UserLevel userLevel;
 
@@ -86,14 +87,13 @@ public class User {
         this.nationality = nationality;
     }
 
-    public Date getDate_of_birth() {
+    public LocalDate getDate_of_birth() {
         return date_of_birth;
     }
 
     public void setDate_of_birth(String date_of_birth) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
-
-        Date date = formatter.parse(date_of_birth);
+        LocalDate date = LocalDate.parse(date_of_birth);
+        date = date.plusDays(1);
         this.date_of_birth = date;
     }
 

@@ -54,7 +54,7 @@
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('date_of_birth')}? 'has-error':''">
                                           <label for="date_of_birth" class="control-label">Date Of Birth</label>
-                                          <input id="date_of_birth" class="form-control" th:field="*{date_of_birth}" />
+                                          <input id="date_of_birth" type="date"  min="1920-01-01" max="2004-03-01"class="form-control" th:field="*{date_of_birth}" />
                                           <p class="error-message" th:each="error : ${#fields.errors('date_of_birth')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>

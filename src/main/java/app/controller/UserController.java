@@ -1,6 +1,5 @@
 package app.controller;
 
-import app.controller.dto.UserRegistrationDto;
 import app.exception.UserNotFoundException;
 import app.model.User;
 import app.repository.UserRepository;
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -16,6 +16,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.util.Calendar.*;
 import static java.util.Calendar.DATE;
@@ -38,10 +40,43 @@ public class UserController {
     }
     // Create a new User
     @PostMapping
-    public String RegisterUser(@ModelAttribute("newUser") User newUser) {
+    public String RegisterUser(@ModelAttribute("newUser") User newUser, BindingResult result) {
+        if(checkForEmpty(newUser)){
+            return "redirect:/register";
+        }
+        User existing = userRepository.findByUserEmail(newUser.getEmail());
+        if(existing != null){
+            result.rejectValue("Email", null, "An account already exists for this email");
+        }
+        if (result.hasErrors() || !emailValidator(newUser.getEmail())){
+            return "register";
+        }
         userRepository.save(newUser);
         return "redirect:/register?success";
     }
+
+    private boolean checkForEmpty(User newUser) {
+        if( newUser.getFirst_name() == null || newUser.getLast_name()==null||
+            newUser.getNationality() == null || newUser.getDate_of_birth() ==null||
+            newUser.getPPS_number() == 0 || newUser.getPhone_number() ==0||
+            newUser.getEmail()==null || newUser.getUserLevel()==null||
+            newUser.getPassword() == null)
+        {
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    //validate email type at back end in case of attack may bypass front side
+    //copy of Yifu's code
+    private Boolean emailValidator(String email){
+        String regex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
     // Get All Users
     @GetMapping("/Users")
     public List<User> getAllUsers() throws ParseException {
@@ -79,22 +114,5 @@ public class UserController {
                 .orElseThrow(() -> new UserNotFoundException(userId));
         userRepository.delete(user);
         return ResponseEntity.ok().build();
-    }
-
-    public static int getDiffYears(Date first, Date last) {
-        Calendar a = getCalendar(first);
-        Calendar b = getCalendar(last);
-        int diff = b.get(YEAR) - a.get(YEAR);
-        if (a.get(MONTH) > b.get(MONTH) ||
-                (a.get(MONTH) == b.get(MONTH) && a.get(DATE) > b.get(DATE))) {
-            diff--;
-        }
-        return diff;
-    }
-
-    public static Calendar getCalendar(Date date) {
-        Calendar cal = Calendar.getInstance(Locale.US);
-        cal.setTime(date);
-        return cal;
     }
 }
