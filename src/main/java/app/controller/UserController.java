@@ -3,6 +3,7 @@ package app.controller;
 import app.exception.UserNotFoundException;
 import app.model.User;
 import app.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -12,22 +13,21 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Calendar.*;
-import static java.util.Calendar.DATE;
-
+@Slf4j
 @Controller
 @RequestMapping("/register")
 public class UserController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @ModelAttribute("user")
     public User user() {
@@ -51,6 +51,7 @@ public class UserController {
         if (result.hasErrors() || !emailValidator(newUser.getEmail())){
             return "register";
         }
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         userRepository.save(newUser);
         return "redirect:/register?success";
     }
