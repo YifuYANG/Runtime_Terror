@@ -1,7 +1,12 @@
-const xhr= new XMLHttpRequest();
+const xhr = new XMLHttpRequest();
 
 function getToken() {
     return sessionStorage.getItem("token")
+}
+
+function isLoggedIn() {
+    return getToken() != null;
+
 }
 
 function submitAppointmentForm() {
@@ -26,10 +31,15 @@ function submitAppointmentForm() {
 }
 
 function logout() {
+    if(isLoggedIn() === false) {
+        alert("You are not logged in.")
+        return
+    }
     xhr.open("POST", "/logout",false)
     xhr.setRequestHeader("token", getToken())
     xhr.onload = function () {
-        alert(this.response.data)
+        sessionStorage.removeItem("token")
+        alert(JSON.stringify(this.response))
     }
     xhr.send();
 }
