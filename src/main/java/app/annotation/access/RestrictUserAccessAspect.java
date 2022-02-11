@@ -31,9 +31,10 @@ public class RestrictUserAccessAspect {
         Method method = signature.getMethod();
         UserLevel requiredLevel = method.getAnnotation(RestrictUserAccess.class).requiredLevel();
         try {
-            String token = joinPoint.getArgs()[0].toString();
+            String token = (String) joinPoint.getArgs()[0];
+            token = token.replaceAll("\"", "");
             if(token == null || token.length() == 0) throw new Exception("Access denied, please login first.");
-            if(!tokenPool.containsToken(token)) throw new Exception("Access denied, invalid token.");
+            if(!tokenPool.containsToken(token)) throw new Exception("Access denied, invalid token >> " + token);
             //If token is valid, we need to check whether user level satisfies required level
             Long userId = tokenPool.getUserIdByToken(token);
             if(requiredLevel == UserLevel.ANY)
@@ -42,6 +43,7 @@ public class RestrictUserAccessAspect {
                 throw new Exception("Access denied, you have no privileges to access this content.");
             return joinPoint.proceed();
         } catch (Exception e) {
+            log.warn(e.getMessage());
             return e.getMessage();
         }
 

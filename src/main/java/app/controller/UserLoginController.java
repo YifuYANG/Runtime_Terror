@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,7 +45,7 @@ public class UserLoginController {
             map.put("status", "fail");
             map.put("msg", "You can not login twice");
         } else {
-            String token = UUID.randomUUID().toString();
+            String token = tokenPool.generateToken();
             tokenPool.login(user.getUserId(), token);
             map.put("status", "success");
             map.put("token", token);
