@@ -1,23 +1,34 @@
 package app.bean;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class TokenPool {
 
-    //pool object maps <Long userId> to <String token>
+    //pool object maps <Long userId -> String token>
     private Map<Long, String> pool = new HashMap<>();
 
-    public long getUserIdByToken(String token) {
-        long userId = -1;
+    public String generateToken() {
+        return UUID.randomUUID().toString();
+    }
+
+    public Long getUserIdByToken(String token) {
         for (Map.Entry<Long, String> entry : pool.entrySet()) {
             if (entry.getValue().equals(token))
-                userId = entry.getKey();
+                return entry.getKey();
         }
-        return userId;
+        return -1L;
+    }
+
+    public String getTokenByUserId(Long id) {
+        return pool.get(id);
     }
 
     public void login(Long userId, String token) {
@@ -38,13 +49,7 @@ public class TokenPool {
     }
 
     public String toString() {
-        String str = "";
-        int count = 1;
-        for(Long userId: pool.keySet()) {
-            str += count + ": " + userId + " -> " + pool.get(userId).toString() + "\n";
-            count++;
-        }
-        return str;
+        return pool.toString();
     }
 
 }

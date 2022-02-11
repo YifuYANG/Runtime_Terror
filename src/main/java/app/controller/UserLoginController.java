@@ -46,7 +46,7 @@ public class UserLoginController {
             map.put("status", "fail");
             map.put("msg", "You can not login twice");
         } else {
-            String token = UUID.randomUUID().toString();
+            String token = tokenPool.generateToken();
             tokenPool.login(user.getUserId(), token);
             map.put("status", "success");
             map.put("token", token);
