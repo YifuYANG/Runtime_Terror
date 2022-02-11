@@ -4,7 +4,7 @@ function Login(){
         password : document.getElementById("password").value,
     };
     var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if(info.userEmail.match(validRegex) && info.userEmail.length>=5 && info.userEmail.length<=25){
+    if(info.userEmail.match(validRegex) && info.userEmail.length>=5 && info.userEmail.length<=50){
         const xhr= new XMLHttpRequest();
         xhr.open("POST", "/login",false)
         xhr.setRequestHeader("Content-Type","application/json");
