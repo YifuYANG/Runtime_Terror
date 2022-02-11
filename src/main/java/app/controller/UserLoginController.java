@@ -6,6 +6,7 @@ import app.repository.UserRepository;
 import app.vo.LoginForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +23,11 @@ public class UserLoginController {
     private TokenPool tokenPool;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
     //login user
+    //adding encoder method
     @PostMapping("/login")
     @ResponseBody
     public Map<String, Object> login(@RequestBody LoginForm loginForm) {
@@ -35,7 +39,7 @@ public class UserLoginController {
         } else if(user == null){
             map.put("status", "fail");
             map.put("msg", "Account does not exist.");
-        } else if(!loginForm.getPassword().equals(user.getPassword())){
+        } else if(!encoder.matches(loginForm.getPassword(),user.getPassword())){
             map.put("status", "fail");
             map.put("msg", "Wrong username or password.");
         } else if(tokenPool.containsUserId(user.getUserId())) {
