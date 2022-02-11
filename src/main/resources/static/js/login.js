@@ -21,6 +21,8 @@ function Login(){
                 }
             }
         }
+        //set csrf header
+        xhr.setRequestHeader("X-XSRF-TOKEN",getCookie("XSRF-TOKEN"))
         xhr.send(JSON.stringify(info));
     } else {
         alert("Invalid email address! please try again");
@@ -31,4 +33,10 @@ function Login(){
 
 function Redirect(){
     window.location.href = "/register";
+}
+//function to get cookie from frontend
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
 }
