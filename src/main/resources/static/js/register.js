@@ -1,14 +1,19 @@
+const info = {
+    first_name: document.getElementById("first_name").value,
+    last_name: document.getElementById("last_name").value, 
+    nationality: document.getElementById("nationality").value,
+    date_of_birth: document.getElementById("date_of_birth").value,
+    PPS_number: document.getElementById("PPS_number").value,
+    phone_number: document.getElementById("phone_number").value,
+    userEmail: document.getElementById("email").value,
+    password: document.getElementById("password").value,
+};
+
 function Register() {
-    const info = {
-        userEmail: document.getElementById("firstName").value,
-        userEmail: document.getElementById("lastName").value, 
-        userEmail: document.getElementById("nationality").value,
-        userEmail: document.getElementById("date_of_birth").value,
-        userEmail: document.getElementById("PPS_number").value,
-        userEmail: document.getElementById("phone_number").value,
-        userEmail: document.getElementById("email").value,
-        password: document.getElementById("password").value,
-    };
+    checkEmail();
+}
+
+function checkEmail(){
     var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     if (info.userEmail.match(validRegex) && info.userEmail.length >= 5 && info.userEmail.length <= 25) {
         const xhr = new XMLHttpRequest();
@@ -31,6 +36,4 @@ function Register() {
     } else {
         alert("Invalid email address! please try again");
     }
-
-
 }

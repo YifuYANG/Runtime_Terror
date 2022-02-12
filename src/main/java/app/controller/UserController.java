@@ -49,7 +49,7 @@ public class UserController {
             result.rejectValue("Email", null, "An account already exists for this email");
         }
         if (result.hasErrors() || !emailValidator(newUser.getEmail())){
-            return "register";
+            return "redirect:/register?tryAgain";
         }
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         userRepository.save(newUser);
