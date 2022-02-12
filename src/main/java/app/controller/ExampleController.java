@@ -6,13 +6,15 @@ import app.constant.UserLevel;
 import app.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 /**
  * This controller is to demonstrate the usage of authentication system
- * Join post-man work place >> https://www.getpostman.com/collections/c867cba690b7a55cda4d
+ * Join post-man workplace >> https://www.getpostman.com/collections/c867cba690b7a55cda4d
  */
 
 @Slf4j
@@ -34,9 +36,9 @@ public class ExampleController {
         }
 
         /**
-         * Issue a unique token to user/front-end app
+         * Issue a unique token to user/front-end
          */
-        String token = UUID.randomUUID().toString();
+        String token = tokenPool.generateToken();
         tokenPool.login(userDetail.getUserId(), token);
         log.info(userDetail.getFirst_name() + " logged in, token issued: " + token);
         log.info("Current token pool:\n" + tokenPool.toString());
