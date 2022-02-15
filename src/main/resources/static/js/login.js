@@ -21,8 +21,6 @@ function Login(){
                 }
             }
         }
-        //set csrf header
-        //xhr.setRequestHeader("X-XSRF-TOKEN",getCookie("XSRF-TOKEN"))
         xhr.send(JSON.stringify(info));
     } else {
         alert("Invalid email address! please try again");
