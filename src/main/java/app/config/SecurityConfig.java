@@ -23,6 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())// enable csrf Protection
                 .ignoringAntMatchers("/login")
+                .ignoringAntMatchers("/logoutUser")
                 .ignoringAntMatchers("/register");//ignore login and register page
     }
 
