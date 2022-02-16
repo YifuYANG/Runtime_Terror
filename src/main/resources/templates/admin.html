@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>admin</title>
+    <meta charset="UTF-8">
+    <script type="text/javascript" th:src="@{/js/admin.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}">
+</head>
+
+<body>
+
+<div class="centered_content">
+    <h1 class="main_header" style="border-bottom: black 3px solid; padding-bottom: 25px">
+        Appointments Management System</h1>
+    <p style="text-align: left">
+        <b th:text="${appointments_number}" style="color: red"></b>
+        appointment(s) are waiting for confirmation:
+    </p>
+    <table class="appointments_table">
+        <thead>
+        <th style="text-align: left">Appointment ID</th>
+        <th>User ID</th>
+        <th>Dose N.O.</th>
+        <th>Brand</th>
+        <th>Vac Center</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Action</th>
+        </thead>
+        <tr th:each="appointment : ${appointments}">
+            <td style="text-align: left" th:text="${appointment.id}">1</td>
+            <td th:text="${appointment.userId}">2</td>
+            <td th:text="${appointment.doseNumber}">3</td>
+            <td th:text="${appointment.brand}">4</td>
+            <td th:text="${appointment.vaccinationCenter}">5</td>
+            <td th:text="${appointment.status}">6</td>
+            <td th:text="${appointment.date}">7</td>
+            <td th:value="${appointment.id}">
+                <button onclick="approve()">Approve</button>
+            </td>
+        </tr>
+    </table>
+    <button>Exit and close</button>
+</div>
+
+</body>
+</html>
