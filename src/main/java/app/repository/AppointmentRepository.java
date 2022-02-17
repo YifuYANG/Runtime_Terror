@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
-    @Query("select a from appointments a where a.user_id = :userId")
+    @Query("select a from Appointment a where a.user_id = :userId")
     Appointment findByUserId(@Param("userId") Long userId);
 
 }

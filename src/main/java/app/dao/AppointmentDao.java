@@ -16,6 +16,10 @@ public class AppointmentDao {
     @Autowired
     AppointmentRepository appointmentRepository;
 
+    public List<Appointment> findAll() {
+        return appointmentRepository.findAll();
+    }
+
     public Appointment save(Appointment appointment) {
         return appointmentRepository.save(appointment);
     }
@@ -53,7 +57,7 @@ public class AppointmentDao {
             adminAppointment.setUserId(appointment.getUser_id());
             adminAppointment.setDate(appointment.getDose_1_date());
             adminAppointment.setDoseNumber(doseNumber);
-            adminAppointment.setId(appointment.getId());
+            adminAppointment.setId(appointment.getAppointment_id());
             adminAppointment.setStatus(appointment.getDose_1_status().name());
             adminAppointment.setVaccinationCenter(appointment.getDose_1_center().name());
         } else {
@@ -61,7 +65,7 @@ public class AppointmentDao {
             adminAppointment.setUserId(appointment.getUser_id());
             adminAppointment.setDate(appointment.getDose_2_date());
             adminAppointment.setDoseNumber(doseNumber);
-            adminAppointment.setId(appointment.getId());
+            adminAppointment.setId(appointment.getAppointment_id());
             adminAppointment.setStatus(appointment.getDose_2_status().name());
             adminAppointment.setVaccinationCenter(appointment.getDose_2_center().name());
         }
