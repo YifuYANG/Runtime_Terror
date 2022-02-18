@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-
 <head>
     <meta charset="UTF-8">
     <title>Vaccination Assistant</title>
     <script type="text/javascript" th:src="@{/js/index.js}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}">
-    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" />
 </head>
 
 <body>
@@ -22,35 +20,34 @@
             <li><button onclick="logout()">Logout</button></li>
         </ul>
 
-        <form class="row" onsubmit="submitAppointmentForm()">
-            <div class="col-md-6 col-md-offset-3">
-                <div class="form-group">
-                    <label class="control-label">Please select which dose brand: </label>
-                    <select class="form-control" id="dose_select">
-                        <option value="PFIZER">Pfizer</option>
-                        <option value="MODERNA">Moderna</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Please select date: </label>
-                    <input class="form-control" id="date_select" type="date" min="2022-03-01" max="2022-03-31" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Please select vaccination center: </label>
-                    <select class="form-control" id="center_select">
-                        <option value="UCD">UCD Campus</option>
-                        <option value="CITY_WEST">City West</option>
-                        <option value="CROKE_PARK">Croke Park</option>
-                    </select>
-                </div>
-
-                <input type="submit" class="submitBtn" value="OK">
+        <form class="appointment_form" onsubmit="submitAppointmentForm()">
+            <div class="form_line">
+                <label>Please select which dose brand: </label>
+                <select id="dose_select">
+                    <option value="PFIZER">Pfizer</option>
+                    <option value="MODERNA">Moderna</option>
+                </select>
             </div>
+
+            <div class="form_line">
+                <label>Please select date: </label>
+                <input id="date_select" type="date" min="2022-03-01" max="2022-12-31" required>
+            </div>
+
+            <div class="form_line">
+                <label>Please select vaccination center: </label>
+                <select id="center_select">
+                    <option value="UCD">UCD Campus</option>
+                    <option value="CITY_WEST">City West</option>
+                    <option value="CROKE_PARK">Croke Park</option>
+                </select>
+            </div>
+
+
+            <input type="submit" class="submitBtn" value="OK">
+
         </form>
 
     </div>
 </body>
-
 </html>
