@@ -53,12 +53,19 @@ public class UserLoginController {
         return map;
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/logoutUser")
     @ResponseBody
-    public String logout(@RequestHeader("token") String token) {
-        long userId = tokenPool.getUserIdByToken(token);
-        tokenPool.logout(token);
-        return userId + " logged out successfully";
+    public Map<String, Object> logout(@RequestHeader("token") String token) {
+        Map<String, Object> map = new HashMap<>(3);
+        if(tokenPool.containsToken(token)){
+            tokenPool.logout(token);
+            map.put("status", "success");
+            map.put("msg", "Logout successfully");
+        } else {
+            map.put("status", "fail");
+            map.put("msg", "Invalid token");
+        }
+        return map;
     }
 
     @GetMapping("/login")
