@@ -14,7 +14,7 @@ import java.util.List;
 public class AppointmentDao {
 
     @Autowired
-    AppointmentRepository appointmentRepository;
+    private AppointmentRepository appointmentRepository;
 
     public List<Appointment> findAll() {
         return appointmentRepository.findAll();

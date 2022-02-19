@@ -4,7 +4,7 @@ import app.constant.DoseBrand;
 import app.constant.DoseStatus;
 import app.constant.VaccinationCenter;
 import app.model.Appointment;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -38,7 +38,7 @@ public class AppointmentDaoTest extends DaoTestBase {
     @Test
     public void testFindAll() {
         int actualSize = appointmentDao.findAll().size();
-        Assert.assertNotEquals(0, actualSize);
+        Assertions.assertNotEquals(0, actualSize);
     }
 
 }
