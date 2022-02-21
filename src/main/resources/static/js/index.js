@@ -1,7 +1,7 @@
 const xhr = new XMLHttpRequest();
 
 function getToken() {
-    return sessionStorage.getItem("token")
+    return JSON.parse(sessionStorage.getItem("token"))
 }
 
 function isLoggedIn() {
@@ -35,7 +35,7 @@ function logout() {
         alert("You are not logged in.")
         return
     }
-    xhr.open("POST", "/logout",false)
+    xhr.open("POST", "/logoutUser",false)
     xhr.setRequestHeader("token", getToken())
     xhr.onload = function () {
         sessionStorage.removeItem("token")
