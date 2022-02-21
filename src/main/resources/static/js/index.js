@@ -7,6 +7,13 @@ function indexLoading() {
 
 function iAmAdmin() {
     if(!isLoggedIn()) alert("Please login first!")
+    let xhr = new XMLHttpRequest()
+    xhr.open("GET", "/admin", false)
+    xhr.setRequestHeader("token", getToken())
+    xhr.onload = function () {
+        document.body.innerHTML = this.responseText
+    }
+    xhr.send()
 }
 
 function getToken() {
@@ -60,4 +67,12 @@ function logout() {
 
     }
     xhr.send();
+}
+
+function approve() {
+
+}
+
+function exit() {
+    window.location.href = '/'
 }
