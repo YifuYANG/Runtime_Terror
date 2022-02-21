@@ -1,4 +1,13 @@
-const xhr = new XMLHttpRequest();
+function indexLoading() {
+    if(isLoggedIn())
+        document.getElementById("loginButton").style.display = "none"
+    else
+        document.getElementById("loginButton").style.display = "inline"
+}
+
+function iAmAdmin() {
+    if(!isLoggedIn()) alert("Please login first!")
+}
 
 function getToken() {
     return sessionStorage.getItem("token")
@@ -10,6 +19,8 @@ function isLoggedIn() {
 }
 
 function submitAppointmentForm() {
+
+    let xhr = new XMLHttpRequest();
 
     if(getToken() === null) {
         alert("You need to login first!")
@@ -31,15 +42,21 @@ function submitAppointmentForm() {
 }
 
 function logout() {
-    if(isLoggedIn() === false) {
+    if(!isLoggedIn()) {
         alert("You are not logged in.")
         return
     }
-    xhr.open("POST", "/logout",false)
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "/sign_out",false)
     xhr.setRequestHeader("token", getToken())
     xhr.onload = function () {
-        sessionStorage.removeItem("token")
-        alert(JSON.stringify(this.response))
+        if(this.response.status === "success") {
+            sessionStorage.removeItem("token")
+            document.location.reload()
+        } else {
+            alert("Log out failed, check your token.")
+        }
+
     }
     xhr.send();
 }
