@@ -40,6 +40,7 @@ public class AppointmentDao {
             result.setDate(a.getDose_1_date());
             result.setDoseNumber(1);
             result.setBrand(a.getDose_1_brand().name());
+            result.setStatus(a.getDose_1_status().name());
             results.add(result);
         }
         //Format 2nd list
@@ -51,6 +52,7 @@ public class AppointmentDao {
             result.setDate(a.getDose_2_date());
             result.setDoseNumber(2);
             result.setBrand(a.getDose_2_brand().name());
+            result.setStatus(a.getDose_2_status().name());
             results.add(result);
         }
         return results;
