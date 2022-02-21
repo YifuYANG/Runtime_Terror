@@ -16,6 +16,19 @@ function iAmAdmin() {
     xhr.send()
 }
 
+function allActivities(){
+    if(!isLoggedIn()){
+        alert("No user is login")
+    }
+    let xhr = new XMLHttpRequest()
+    xhr.open("GET", "/activity", false)
+    xhr.setRequestHeader("token", getToken())
+    xhr.onload = function () {
+        document.body.innerHTML = this.responseText
+    }
+    xhr.send()
+}
+
 function getToken() {
     return JSON.parse(sessionStorage.getItem("token"))
 }
