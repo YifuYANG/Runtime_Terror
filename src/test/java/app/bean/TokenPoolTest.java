@@ -21,8 +21,7 @@ public class TokenPoolTest {
     }
 
     @Test
-    public void testGetIdByToken() {
-        //tokenPool.login(1L, mockToken);
+    public void testGetUserIdByToken() {
         Assertions.assertEquals(1, (long) tokenPool.getUserIdByToken(mockToken));
     }
 

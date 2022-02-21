@@ -10,7 +10,7 @@ function iAmAdmin() {
 }
 
 function getToken() {
-    return sessionStorage.getItem("token")
+    return JSON.parse(sessionStorage.getItem("token"))
 }
 
 function isLoggedIn() {
@@ -50,7 +50,8 @@ function logout() {
     xhr.open("GET", "/sign_out",false)
     xhr.setRequestHeader("token", getToken())
     xhr.onload = function () {
-        if(this.response.status === "success") {
+        res = JSON.parse(this.responseText)
+        if(res.status === "success") {
             sessionStorage.removeItem("token")
             document.location.reload()
         } else {

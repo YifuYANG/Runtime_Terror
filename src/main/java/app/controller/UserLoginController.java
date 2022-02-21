@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.annotation.access.RestrictUserAccess;
 import app.bean.TokenPool;
 import app.model.User;
 import app.repository.UserRepository;
@@ -55,10 +56,9 @@ public class UserLoginController {
     @ResponseBody
     public Map<String, String> logout(@RequestHeader("token") String token) {
         Map<String, String> map = new HashMap<>(3);
-        token = token.replaceAll("\"", "");
         if(tokenPool.containsToken(token)){
-            tokenPool.logout(token);
             log.info("Token removed for user id = " + tokenPool.getUserIdByToken(token));
+            tokenPool.logout(token);
             map.put("status", "success");
         } else {
             log.warn("Logout failed: Invalid token -> " + token);
