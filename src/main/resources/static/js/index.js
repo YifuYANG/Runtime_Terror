@@ -82,8 +82,20 @@ function logout() {
     xhr.send();
 }
 
-function approve() {
-
+function approve(appointmentId, doseNumber) {
+    let data = {
+        appointmentId: appointmentId,
+        doseNumber: doseNumber
+    }
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/admin/update-appointment",false)
+    xhr.setRequestHeader("Content-Type","application/json")
+    xhr.setRequestHeader("token", getToken())
+    xhr.onload = function () {
+        alert(JSON.stringify(this.responseText))
+        document.location.reload()
+    }
+    xhr.send(JSON.stringify(data));
 }
 
 function exit() {

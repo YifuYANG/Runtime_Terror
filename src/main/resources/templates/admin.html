@@ -27,7 +27,7 @@
             <td th:text="${appointment.status}"></td>
             <td th:text="${appointment.date}"></td>
             <td th:value="${appointment.id}">
-                <button onclick="approve()">Approve</button>
+                <button th:onclick="|approve('${appointment.id}', '${appointment.doseNumber}')|">Approve</button>
             </td>
         </tr>
     </table>

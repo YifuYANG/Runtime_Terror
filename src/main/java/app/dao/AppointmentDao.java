@@ -6,6 +6,7 @@ import app.vo.AdminAppointment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,10 @@ public class AppointmentDao {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
+
+    public Appointment findById(Long id) {
+        return appointmentRepository.findById(id).get();
+    }
 
     public List<Appointment> findAll() {
         return appointmentRepository.findAll();
@@ -25,6 +30,20 @@ public class AppointmentDao {
 
     public Appointment findByUserId(Long id) {
         return appointmentRepository.findByUserId(id);
+    }
+
+    @Transactional
+    public void updateDose1(Long id) {
+        appointmentRepository.updateDose1(id);
+    }
+
+    @Transactional
+    public void updateDose2(Long id) {
+        appointmentRepository.updateDose2(id);
+    }
+
+    public boolean existsById(Long id) {
+        return appointmentRepository.existsById(id);
     }
 
     public List<AdminAppointment> findAllPendingAppointments() {
