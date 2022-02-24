@@ -34,4 +34,7 @@ public class Appointment {
     private DoseBrand dose_1_brand;
     private DoseBrand dose_2_brand;
 
+    public String toString(){
+        return "Dose Brand: " + dose_1_brand +" Dose date: " + dose_1_date + " Dose centre: " + dose_1_center;
+    }
 }
