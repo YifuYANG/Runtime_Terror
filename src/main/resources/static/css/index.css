@@ -47,3 +47,13 @@
     margin-top: 10%;
     width: 30%;
 }
+
+.appointments_table {
+    width: 100%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    border: none;
+    border-collapse: separate;
+    border-spacing: 0 20px;
+    text-align: left;
+}

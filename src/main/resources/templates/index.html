@@ -9,17 +9,18 @@
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" />
 </head>
 
-<body>
+<body onload="indexLoading()">
     <div class="centered_content">
 
         <h1 class="main_header">Welcome to Runtime Terror Vaccination Assistant</h1>
         <ul class="nav_bar">
-            <li><a href="/login"><button>Login</button></a></li>
+            <li id="loginButton"><a href="/login"><button>Login</button></a></li>
             <li><a href="/register"><button>Register</button></a></li>
-            <li><a href="/activities"><button>Activities</button></a></li>
+            <li><button onclick="allActivities()">Activities</button></li>
             <li><a href="/index"><button>Booking</button></a></li>
             <li><a href="/forum"><button>Forum</button></a></li>
             <li><button onclick="logout()">Logout</button></li>
+            <li><button onclick="iAmAdmin()">Admin</button></li>
         </ul>
 
         <form class="row" onsubmit="submitAppointmentForm()">

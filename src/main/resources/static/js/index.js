@@ -1,7 +1,36 @@
-const xhr = new XMLHttpRequest();
+function indexLoading() {
+    if(isLoggedIn())
+        document.getElementById("loginButton").style.display = "none"
+    else
+        document.getElementById("loginButton").style.display = "inline"
+}
+
+function iAmAdmin() {
+    if(!isLoggedIn()) alert("Please login first!")
+    let xhr = new XMLHttpRequest()
+    xhr.open("GET", "/admin", false)
+    xhr.setRequestHeader("token", getToken())
+    xhr.onload = function () {
+        document.body.innerHTML = this.responseText
+    }
+    xhr.send()
+}
+
+function allActivities(){
+    if(!isLoggedIn()){
+        alert("No user is login")
+    }
+    let xhr = new XMLHttpRequest()
+    xhr.open("GET", "/activity", false)
+    xhr.setRequestHeader("token", getToken())
+    xhr.onload = function () {
+        document.body.innerHTML = this.responseText
+    }
+    xhr.send()
+}
 
 function getToken() {
-    return sessionStorage.getItem("token")
+    return JSON.parse(sessionStorage.getItem("token"))
 }
 
 function isLoggedIn() {
@@ -10,6 +39,8 @@ function isLoggedIn() {
 }
 
 function submitAppointmentForm() {
+
+    let xhr = new XMLHttpRequest();
 
     if(getToken() === null) {
         alert("You need to login first!")
@@ -31,15 +62,42 @@ function submitAppointmentForm() {
 }
 
 function logout() {
-    if(isLoggedIn() === false) {
+    if(!isLoggedIn()) {
         alert("You are not logged in.")
         return
     }
-    xhr.open("POST", "/logout",false)
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "/sign_out",false)
     xhr.setRequestHeader("token", getToken())
     xhr.onload = function () {
-        sessionStorage.removeItem("token")
-        alert(JSON.stringify(this.response))
+        res = JSON.parse(this.responseText)
+        if(res.status === "success") {
+            sessionStorage.removeItem("token")
+            document.location.reload()
+        } else {
+            alert("Log out failed, check your token.")
+        }
+
     }
     xhr.send();
+}
+
+function approve(appointmentId, doseNumber) {
+    let data = {
+        appointmentId: appointmentId,
+        doseNumber: doseNumber
+    }
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/admin/update-appointment",false)
+    xhr.setRequestHeader("Content-Type","application/json")
+    xhr.setRequestHeader("token", getToken())
+    xhr.onload = function () {
+        alert(JSON.stringify(this.responseText))
+        document.location.reload()
+    }
+    xhr.send(JSON.stringify(data));
+}
+
+function exit() {
+    window.location.href = '/'
 }

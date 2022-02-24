@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.annotation.access.RestrictUserAccess;
 import app.bean.TokenPool;
 import app.model.User;
 import app.repository.UserRepository;
@@ -34,42 +35,40 @@ public class UserLoginController {
         User user = userRepository.findByUserEmail(loginForm.getUserEmail());
         if (!emailValidator(loginForm.getUserEmail())){
             map.put("status", "fail");
-            map.put("msg", "Wrong email type, dont hack me?!?!");
+            map.put("msg", "Wrong email type.");
         } else if(user == null){
             map.put("status", "fail");
             map.put("msg", "Account does not exist.");
         } else if(!encoder.matches(loginForm.getPassword(),user.getPassword())){
             map.put("status", "fail");
             map.put("msg", "Wrong username or password.");
-        } else if(tokenPool.containsUserId(user.getUserId())) {
-            map.put("status", "fail");
-            map.put("msg", "You can not login twice");
         } else {
             String token = tokenPool.generateToken();
             tokenPool.login(user.getUserId(), token);
+            log.info("Token issued to " + user.getUserId());
             map.put("status", "success");
             map.put("token", token);
         }
         return map;
     }
 
-    @PostMapping("/logoutUser")
+    @GetMapping("/sign_out")
     @ResponseBody
-    public Map<String, Object> logout(@RequestHeader("token") String token) {
-        Map<String, Object> map = new HashMap<>(3);
+    public Map<String, String> logout(@RequestHeader("token") String token) {
+        Map<String, String> map = new HashMap<>(3);
         if(tokenPool.containsToken(token)){
+            log.info("Token removed for user id = " + tokenPool.getUserIdByToken(token));
             tokenPool.logout(token);
             map.put("status", "success");
-            map.put("msg", "Logout successfully");
         } else {
+            log.warn("Logout failed: Invalid token -> " + token);
             map.put("status", "fail");
-            map.put("msg", "Invalid token");
         }
         return map;
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String loginPage() {
         return "login";
     }
 

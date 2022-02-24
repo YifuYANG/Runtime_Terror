@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class AdminAppointment {
 
-    private Long id;
+    private Long id; //Appointment id
     private Long userId;
     private int doseNumber;
     private String brand;
