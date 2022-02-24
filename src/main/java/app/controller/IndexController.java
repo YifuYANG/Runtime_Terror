@@ -26,6 +26,9 @@ public class IndexController {
     AppointmentDao appointmentDao;
 
     @Autowired
+    AppointmentRepository appointmentRepository;
+
+    @Autowired
     private TokenPool tokenPool;
 
     @GetMapping(value = {"/index", "/"})
@@ -37,12 +40,16 @@ public class IndexController {
     @PostMapping("/create-appointment")
     @ResponseBody
     public String book(@RequestHeader("token") String token, @RequestBody Map<String, Object> form) throws ParseException {
-        System.out.println(form.get("brand"));
-        System.out.println(form.get("date"));
-        System.out.println(form.get("center"));
-        System.out.println(tokenPool.containsToken(token));
         System.out.println(tokenPool.getUserIdByToken(token));
         Appointment appointment = new Appointment();
+
+        if(appointmentDao.findByUserId(tokenPool.getUserIdByToken(token))!=null){
+            System.out.println("first appointment already booked");
+            return "First appointment already booked";
+        }
+
+        appointment.setUser_id(tokenPool.getUserIdByToken(token));
+
         switch (form.get("brand").toString()){
             case "PFIZER":
                 appointment.setDose_1_brand(DoseBrand.PFIZER);
@@ -55,6 +62,7 @@ public class IndexController {
         }
         Date sqlDate = convertDate((String) form.get("date"));
         appointment.setDose_1_date(sqlDate);
+        System.out.println(form.get("center"));
         switch (String.valueOf(form.get("center"))){
             case "UCD":
                 appointment.setDose_1_center(VaccinationCenter.UCD);
@@ -64,6 +72,7 @@ public class IndexController {
                 break;
             case "CROKE_PARK":
                 appointment.setDose_1_center(VaccinationCenter.CROKE_PARK);
+                break;
             default:
                 throw new IllegalStateException("Unexpected value: " + form.get("center"));
         }
