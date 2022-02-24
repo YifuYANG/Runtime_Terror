@@ -23,12 +23,6 @@
             <li><button onclick="iAmAdmin()">Admin</button></li>
         </ul>
         
-        <div th:if="${param.tryAgain}">
-            <div class="alert alert-info">
-                   You must book first appointment!
-            </div>
-        </div>
-
         <form class="row">
             <div class="col-md-6 col-md-offset-3">
                 <div class="form-group">
@@ -52,9 +46,10 @@
                         <option value="CROKE_PARK">Croke Park</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-success" onclick="submitAppointmentForm()">Submit</button>
-                <span>Already Booked First Appointment? <a href="/" th:href="@{/appointment2}">Book
-                    second appointment here</a></span>
+
+                <button type="submit" class="btn btn-success" onclick="submitAppointment2Form()">Submit</button>
+                <span>Need to book first appointment <a href="/" th:href="@{/index}">Book
+                    first appointment here</a></span>
             </div>
         </form>
 

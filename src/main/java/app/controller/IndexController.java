@@ -26,9 +26,6 @@ public class IndexController {
     AppointmentDao appointmentDao;
 
     @Autowired
-    AppointmentRepository appointmentRepository;
-
-    @Autowired
     private TokenPool tokenPool;
 
     @GetMapping(value = {"/index", "/"})
@@ -36,16 +33,19 @@ public class IndexController {
         return "index";
     }
 
+    @GetMapping(value = "/appointment2")
+    public String appointment2() {return "appointment2";}
+
     @RestrictUserAccess(requiredLevel = UserLevel.CLIENT)
     @PostMapping("/create-appointment")
     @ResponseBody
     public String book(@RequestHeader("token") String token, @RequestBody Map<String, Object> form) throws ParseException {
-        System.out.println(tokenPool.getUserIdByToken(token));
         Appointment appointment = new Appointment();
 
         if(appointmentDao.findByUserId(tokenPool.getUserIdByToken(token))!=null){
             System.out.println("first appointment already booked");
-            return "First appointment already booked";
+            return "You have already booked your first appointment, " +
+                    "please book your second appointment";
         }
 
         appointment.setUser_id(tokenPool.getUserIdByToken(token));
@@ -62,7 +62,7 @@ public class IndexController {
         }
         Date sqlDate = convertDate((String) form.get("date"));
         appointment.setDose_1_date(sqlDate);
-        System.out.println(form.get("center"));
+
         switch (String.valueOf(form.get("center"))){
             case "UCD":
                 appointment.setDose_1_center(VaccinationCenter.UCD);
@@ -77,6 +77,47 @@ public class IndexController {
                 throw new IllegalStateException("Unexpected value: " + form.get("center"));
         }
         appointment.setDose_1_status(DoseStatus.PENDING);
+        System.out.println(appointment);
+        appointmentDao.save(appointment);
+        return "OK";
+    }
+
+    @RestrictUserAccess(requiredLevel = UserLevel.CLIENT)
+    @PostMapping("/create-second-appointment")
+    @ResponseBody
+    public String bookSecondAppointment(@RequestHeader("token") String token, @RequestBody Map<String, Object> form) throws ParseException {
+        System.out.println(tokenPool.getUserIdByToken(token));
+
+        if(appointmentDao.findByUserId(tokenPool.getUserIdByToken(token))==null){
+            System.out.println("Must book first appointment");
+            return "You must book your first appointment before your second " +
+                    "appointment. Please book your first appointment";
+        }
+        Appointment appointment = appointmentDao.findByUserId(tokenPool.getUserIdByToken(token));
+        if(appointment.getDose_1_status()==DoseStatus.PENDING){
+            return "Dose status is pending, please return later to book again";
+        }
+
+        appointment.setDose_2_brand(appointment.getDose_1_brand());
+
+        Date sqlDate = convertDate((String) form.get("date"));
+        appointment.setDose_2_date(sqlDate);
+
+        switch (String.valueOf(form.get("center"))){
+            case "UCD":
+                appointment.setDose_2_center(VaccinationCenter.UCD);
+                break;
+            case "CITY_WEST":
+                appointment.setDose_2_center(VaccinationCenter.CITY_WEST);
+                break;
+            case "CROKE_PARK":
+                appointment.setDose_2_center(VaccinationCenter.CROKE_PARK);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + form.get("center"));
+        }
+
+        appointment.setDose_2_status(DoseStatus.PENDING);
         System.out.println(appointment);
         appointmentDao.save(appointment);
         return "OK";

@@ -61,6 +61,29 @@ function submitAppointmentForm() {
     xhr.send(JSON.stringify(data));
 }
 
+function submitAppointment2Form() {
+
+    let xhr = new XMLHttpRequest();
+
+    if(getToken() === null) {
+        alert("You need to login first!")
+    }
+
+    let data = {
+        brand: document.getElementById("dose_select").value,
+        date: document.getElementById("date_select").value,
+        center: document.getElementById("center_select").value
+    }
+
+    xhr.open("POST", "/create-second-appointment",false)
+    xhr.setRequestHeader("Content-Type","application/json")
+    xhr.setRequestHeader("token", getToken())
+    xhr.onload = function () {
+        alert(JSON.stringify(this.response))
+    }
+    xhr.send(JSON.stringify(data));
+}
+
 function logout() {
     if(!isLoggedIn()) {
         alert("You are not logged in.")
