@@ -1,16 +1,20 @@
 package app.controller;
 
-import app.annotation.access.RestrictUserAccess;
 import app.bean.TokenPool;
 import app.model.User;
 import app.repository.UserRepository;
 import app.vo.LoginForm;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Bucket4j;
+import io.github.bucket4j.Refill;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -26,6 +30,16 @@ public class UserLoginController {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
+
+    //access rate limitation
+    private final Bucket bucket;
+    public UserLoginController() {
+        Bandwidth limit = Bandwidth.classic(5, Refill.greedy(5, Duration.ofMinutes(1)));
+        this.bucket = Bucket4j.builder()
+                .addLimit(limit)
+                .build();
+    }
+
     //login user
     //adding encoder method
     @PostMapping("/login")
@@ -33,21 +47,27 @@ public class UserLoginController {
     public Map<String, Object> login(@RequestBody LoginForm loginForm) {
         Map<String, Object> map = new HashMap<>(3);
         User user = userRepository.findByUserEmail(loginForm.getUserEmail());
-        if (!emailValidator(loginForm.getUserEmail())){
-            map.put("status", "fail");
-            map.put("msg", "Wrong email type.");
-        } else if(user == null){
-            map.put("status", "fail");
-            map.put("msg", "Account does not exist.");
-        } else if(!encoder.matches(loginForm.getPassword(),user.getPassword())){
-            map.put("status", "fail");
-            map.put("msg", "Wrong username or password.");
+        //check whether the request is allowed by consuming a token from the bucket
+        if(bucket.tryConsume(1)){
+            if (!emailValidator(loginForm.getUserEmail())){
+                map.put("status", "fail");
+                map.put("msg", "Wrong email type.");
+            } else if(user == null){
+                map.put("status", "fail");
+                map.put("msg", "Account does not exist.");
+            } else if(!encoder.matches(loginForm.getPassword(),user.getPassword())){
+                map.put("status", "fail");
+                map.put("msg", "Wrong username or password.");
+            } else {
+                String token = tokenPool.generateToken();
+                tokenPool.login(user.getUserId(), token);
+                log.info("Token issued to " + user.getUserId());
+                map.put("status", "success");
+                map.put("token", token);
+            }
         } else {
-            String token = tokenPool.generateToken();
-            tokenPool.login(user.getUserId(), token);
-            log.info("Token issued to " + user.getUserId());
-            map.put("status", "success");
-            map.put("token", token);
+            map.put("status", "fail");
+            map.put("msg", "Too many request, you can try again after one minue");
         }
         return map;
     }
