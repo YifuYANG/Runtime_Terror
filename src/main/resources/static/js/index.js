@@ -1,8 +1,14 @@
 function indexLoading() {
-    if(isLoggedIn())
+    if(isLoggedIn()) {
         document.getElementById("loginButton").style.display = "none"
-    else
+        document.getElementById("activityButton").style.display = "inline"
+        document.getElementById("adminButton").style.display = "inline"
+    }
+    else {
         document.getElementById("loginButton").style.display = "inline"
+        document.getElementById("activityButton").style.display = "none"
+        document.getElementById("adminButton").style.display = "none"
+    }
 }
 
 function iAmAdmin() {
