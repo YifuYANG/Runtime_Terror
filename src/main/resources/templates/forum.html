@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Forum</title>
+    <script type="text/javascript" th:src="@{/js/forum.js}"></script>
+    <script type="text/javascript" th:src="@{/js/index.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/forum.css}">
+</head>
+
+<body>
+    <div class="general">
+        <h1>Public forum:</h1>
+        <table class="chatArea" th:each="post : ${posts}" >
+            <tr class="chatAreaRow">
+                <td class="userName" th:text="${post.userName}"></td>
+                <td class="contentDisplay" th:text="${post.content}"></td>
+                <td class="dateDisplay" th:text="${post.date}" style="text-align: center"></td>
+                </td>
+            </tr>
+        </table>
+        <div class="inputFooter">
+            <div>
+                <textarea id="queryInputArea" rows="10">Post your question here, content length < 255</textarea>
+                <br><br>
+                <button onclick="createPost()">POST</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,8 +1,14 @@
 function indexLoading() {
-    if(isLoggedIn())
+    if(isLoggedIn()) {
         document.getElementById("loginButton").style.display = "none"
-    else
+        document.getElementById("activityButton").style.display = "inline"
+        document.getElementById("adminButton").style.display = "inline"
+    }
+    else {
         document.getElementById("loginButton").style.display = "inline"
+        document.getElementById("activityButton").style.display = "none"
+        document.getElementById("adminButton").style.display = "none"
+    }
 }
 
 function iAmAdmin() {
@@ -53,6 +59,29 @@ function submitAppointmentForm() {
     }
 
     xhr.open("POST", "/create-appointment",false)
+    xhr.setRequestHeader("Content-Type","application/json")
+    xhr.setRequestHeader("token", getToken())
+    xhr.onload = function () {
+        alert(JSON.stringify(this.response))
+    }
+    xhr.send(JSON.stringify(data));
+}
+
+function submitAppointment2Form() {
+
+    let xhr = new XMLHttpRequest();
+
+    if(getToken() === null) {
+        alert("You need to login first!")
+    }
+
+    let data = {
+        brand: document.getElementById("dose_select").value,
+        date: document.getElementById("date_select").value,
+        center: document.getElementById("center_select").value
+    }
+
+    xhr.open("POST", "/create-second-appointment",false)
     xhr.setRequestHeader("Content-Type","application/json")
     xhr.setRequestHeader("token", getToken())
     xhr.onload = function () {
