@@ -99,14 +99,8 @@ function logout() {
     xhr.open("GET", "/sign_out",false)
     xhr.setRequestHeader("token", getToken())
     xhr.onload = function () {
-        res = JSON.parse(this.responseText)
-        if(res.status === "success") {
-            sessionStorage.removeItem("token")
-            document.location.reload()
-        } else {
-            alert("Log out failed, check your token.")
-        }
-
+        sessionStorage.removeItem("token")
+        document.location.reload()
     }
     xhr.send();
 }
