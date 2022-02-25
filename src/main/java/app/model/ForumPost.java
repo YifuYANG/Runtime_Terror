@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -20,8 +20,8 @@ public class ForumPost {
     private Long id;
 
     private String content;
-    private Long posterId; //Mapped to user id
-    private Date dateCreated;
+    private Long userId; //Mapped to user id
+    private Timestamp dateCreated;
 
 
 }

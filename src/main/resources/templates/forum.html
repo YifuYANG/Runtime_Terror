@@ -12,20 +12,20 @@
 <body>
     <div class="general">
         <h1>Public forum:</h1>
-        <table class="chatArea">
+        <table class="chatArea" th:each="post : ${posts}" >
             <tr class="chatAreaRow">
-                <td class="userName"></td>
-                <td class="contentDisplay"></td>
-                <td class="dateDisplay" style="text-align: center"></td>
+                <td class="userName" th:text="${post.userName}"></td>
+                <td class="contentDisplay" th:text="${post.content}"></td>
+                <td class="dateDisplay" th:text="${post.date}" style="text-align: center"></td>
                 </td>
             </tr>
         </table>
         <div class="inputFooter">
-            <form action="/forum/post">
-                <textarea id="queryInputArea" rows="10">Post your query question here, content length < 255</textarea>
+            <div>
+                <textarea id="queryInputArea" rows="10">Post your question here, content length < 255</textarea>
                 <br><br>
-                <input type="submit" value="POST">
-            </form>
+                <button onclick="createPost()">POST</button>
+            </div>
         </div>
     </div>
 
