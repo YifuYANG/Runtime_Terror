@@ -1,0 +1,42 @@
+.general {
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.inputFooter {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%;
+    border-top: 3px solid black;
+    text-align: center;
+}
+
+#queryInputArea {
+    margin-top: 50px;
+    width: 75%;
+    resize: none;
+}
+
+.chatArea {
+    margin-top:50px;
+    text-align: left;
+    border-spacing: 5em;
+    border-collapse: separate;
+}
+
+.userName {
+    font-style: italic;
+    width: 20%;
+    color: #648eff;
+    vertical-align: top;
+    text-align: left;
+}
+
+.contentDisplay {
+    width: 70%;
+}
+
+.dateDisplay {
+    width: 10%;
+}
