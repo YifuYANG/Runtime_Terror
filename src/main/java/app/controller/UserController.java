@@ -116,4 +116,5 @@ public class UserController {
         userRepository.delete(user);
         return ResponseEntity.ok().build();
     }
+
 }

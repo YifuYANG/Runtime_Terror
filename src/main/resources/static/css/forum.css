@@ -19,10 +19,10 @@
 }
 
 .chatArea {
-    margin-top:50px;
     text-align: left;
-    border-spacing: 5em;
+    border-spacing: 1em;
     border-collapse: separate;
+    height: fit-content;
 }
 
 .userName {

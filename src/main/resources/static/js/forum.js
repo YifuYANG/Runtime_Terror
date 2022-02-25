@@ -7,8 +7,11 @@ function createPost() {
     xhr.setRequestHeader("Content-Type","application/json")
     xhr.setRequestHeader("token", getToken())
     xhr.onload = function () {
-        alert(this.responseText)
-        document.location.reload()
+        if(this.response.status === 200) {
+            alert(this.responseText)
+            document.location.reload()
+        }
+        else document.body.innerHTML = this.responseText
     }
     xhr.send(JSON.stringify(data))
 }
