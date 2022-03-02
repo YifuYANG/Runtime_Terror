@@ -55,6 +55,7 @@ function submitAppointmentForm() {
     let data = {
         brand: document.getElementById("dose_select").value,
         date: document.getElementById("date_select").value,
+        slot: document.getElementById("slot_select").value,
         center: document.getElementById("center_select").value
     }
 

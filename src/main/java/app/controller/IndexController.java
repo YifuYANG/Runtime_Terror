@@ -2,20 +2,16 @@ package app.controller;
 
 import app.annotation.access.RestrictUserAccess;
 import app.bean.TokenPool;
-import app.constant.DoseBrand;
-import app.constant.DoseStatus;
-import app.constant.UserLevel;
-import app.constant.VaccinationCenter;
+import app.constant.*;
 import app.dao.AppointmentDao;
 import app.model.Appointment;
-import app.repository.AppointmentRepository;
+import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -60,8 +56,43 @@ public class IndexController {
             default:
                 throw new IllegalStateException("Unexpected value: " + form.get("brand"));
         }
+
         Date sqlDate = convertDate((String) form.get("date"));
+        if(appointmentDao.findAllByDate1(sqlDate).size()>=3){
+            System.out.println("all slots taking on this date");
+            return "All slots taking for this date please try another!";
+        }
         appointment.setDose_1_date(sqlDate);
+
+        System.out.println("----------"+form.get("slot").toString());
+
+        //String slot = form.get("slot").toString();
+        DoseSlot slot = DoseSlot.MORNING;
+        System.out.println(slot);
+        switch (form.get("slot").toString()){
+            case "MORNING":
+                slot = DoseSlot.MORNING;
+                break;
+            case "AFTERNOON":
+                slot = DoseSlot.AFTERNOON;
+                break;
+            case "EVENING":
+                slot = DoseSlot.EVENING;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + form.get("brand"));
+        }
+
+        System.out.println(slot);
+        Appointment exists = appointmentDao.findAppointmentByDateAndSlot(sqlDate,slot);
+        System.out.println(exists);
+        //try to replace this with an sql statement that returns true if t exists
+        if (exists==null) {
+            appointment.setDose_1_Slot(slot);
+        }else{
+            return "This slot is taken for this date.";
+        }
+
 
         switch (String.valueOf(form.get("center"))){
             case "UCD":

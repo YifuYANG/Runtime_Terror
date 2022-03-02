@@ -1,5 +1,6 @@
 package app.dao;
 
+import app.constant.DoseSlot;
 import app.model.Appointment;
 import app.repository.AppointmentRepository;
 import app.vo.AdminAppointment;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,12 @@ public class AppointmentDao {
     public Appointment findByUserId(Long id) {
         return appointmentRepository.findByUserId(id);
     }
+
+    public List<Appointment> findAllByDate1(Date date){ return appointmentRepository.findAllByDate1(date);}
+
+    public List<Appointment> findAllByDate2(Date date){ return appointmentRepository.findAllByDate2(date);}
+
+    public Appointment findAppointmentByDateAndSlot(Date date, DoseSlot slot) { return appointmentRepository.findAppointmentByDateAndSlot(date, slot); }
 
     @Transactional
     public void updateDose1(Long id) {
