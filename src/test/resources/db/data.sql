@@ -9,7 +9,9 @@ CREATE TABLE appointments (
                                  dose_1_date DATE,
                                  dose_2_date DATE,
                                  dose_1_brand INT,
-                                 dose_2_brand INT
+                                 dose_2_brand INT,
+                                 dose_2_slot INT,
+                                 dose_1_slot INT
 );
 
 /*user 1 who is waiting for first dose*/
@@ -38,7 +40,7 @@ INSERT INTO appointments (
     dose_2_date,
     dose_1_brand,
     dose_2_brand
-) VALUES(2, 2, 0, 0, 1, 0, '2022-03-01', '2022-03-31', 0, 0);
+) VALUES(2, 2, 0, 0, 1, 0, '2022-03-01', '2022-03-31', 0, 1);
 
 /*user 3 who has completed both doses*/
 INSERT INTO appointments (

@@ -170,8 +170,8 @@ public class IndexController {
         Map<?, ?> object = gson.fromJson(content, Map.class);
         List<Map<Object, Object>> values = (List<Map<Object, Object>>) ((Map<Object, Object>)object.get("data")).get("values");
         for(Map<Object, Object> value : values) {
-            if(value.get("Brand").equals("Moderna")) value.put("Frequency", appointmentDao.getNumberOfPfizer());
-            else value.put("Frequency", appointmentDao.getNumberOfModerna());
+            if(value.get("Brand").equals("Moderna")) value.put("Frequency", appointmentDao.getNumberOfModerna());
+            else value.put("Frequency", appointmentDao.getNumberOfPfizer());
         }
         return gson.toJson(object);
     }

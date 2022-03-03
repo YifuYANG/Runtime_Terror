@@ -53,4 +53,10 @@ public class AppointmentDaoTest extends DaoTestBase {
         Assertions.assertEquals(DoseStatus.RECEIVED, appointment.getDose_1_status());
     }
 
+    @Test
+    public void testCountDoseBrand() {
+        int actual = appointmentDao.getNumberOfPfizer();
+        Assertions.assertEquals(4, actual);
+    }
+
 }
