@@ -5,23 +5,26 @@
         Activity Management System</h1>
     <p style="text-align: left">
         <b th:text="${user}" style="color: red"></b>
-        All activities:
     </p>
     <table class="activities_table">
         <thead>
         <th>First dose center</th>
-        <th>First dose data</th>
+        <th>First dose date</th>
+        <th>First dose time</th>
         <th>First dose status</th>
         <th>Second dose center</th>
         <th>Second dose date</th>
+        <th>Second dose time</th>
         <th>Second dose status</th>
         </thead>
         <tr th:each="activity : ${activities}">
             <td th:text="${activity.first_dose_center}"></td>
             <td th:text="${activity.first_dose_date}" style="text-align: left"></td>
+            <td th:text="${activity.first_dose_time}"></td>
             <td th:text="${activity.first_dose_status}"></td>
             <td th:text="${activity.second_dose_center}"></td>
             <td th:text="${activity.second_dose_date}"></td>
+            <td th:text="${activity.second_dose_time}"></td>
             <td th:text="${activity.second_dose_status}"></td>
             </td>
         </tr>
