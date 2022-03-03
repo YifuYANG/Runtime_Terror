@@ -124,3 +124,7 @@ function approve(appointmentId, doseNumber) {
 function exit() {
     window.location.href = '/'
 }
+
+function renderVis() {
+    vegaEmbed('#vis', vegaData)
+}

@@ -1,5 +1,6 @@
 package app.dao;
 
+import app.constant.DoseBrand;
 import app.model.Appointment;
 import app.repository.AppointmentRepository;
 import app.vo.AdminAppointment;
@@ -30,6 +31,16 @@ public class AppointmentDao {
 
     public Appointment findByUserId(Long id) {
         return appointmentRepository.findByUserId(id);
+    }
+
+    public int getNumberOfPfizer() {
+        return appointmentRepository.countDose1Brand(DoseBrand.PFIZER) +
+                appointmentRepository.countDose2Brand(DoseBrand.PFIZER);
+    }
+
+    public int getNumberOfModerna() {
+        return appointmentRepository.countDose1Brand(DoseBrand.MODERNA) +
+                appointmentRepository.countDose2Brand(DoseBrand.MODERNA);
     }
 
     @Transactional

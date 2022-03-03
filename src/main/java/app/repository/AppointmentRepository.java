@@ -1,5 +1,6 @@
 package app.repository;
 
+import app.constant.DoseBrand;
 import app.model.Appointment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -31,5 +32,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Modifying
     @Query("update Appointment set dose_2_status = 1 where appointment_id = :appointment_id")
     void updateDose2(@Param("appointment_id") Long appointment_id);
+
+    @Query("select count(user_id) from Appointment  where dose_1_brand = :param")
+    int countDose1Brand(@Param("param") DoseBrand param);
+
+    @Query("select count(user_id) from Appointment  where dose_2_brand = :param")
+    int countDose2Brand(@Param("param") DoseBrand param);
 
 }

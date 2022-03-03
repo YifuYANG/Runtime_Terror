@@ -1,0 +1,32 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "A simple bar chart with embedded data.",
+  "width": "container",
+  "height": 300,
+  "data": {
+    "values": [
+      {"Brand": "Moderna", "Frequency": 0},
+      {"Brand": "Pfizer", "Frequency": 0}
+    ]
+  },
+  "mark": {
+    "type": "bar",
+    "width": 40
+  },
+  "encoding": {
+    "y": {"field": "Frequency", "type": "quantitative"},
+    "x": {"field": "Brand", "type": "nominal"}
+  },
+  "config": {
+    "autosize": "fit",
+    "axis": {
+      "titleColor": "blue",
+      "titleFontWeight": "normal",
+      "titleFontSize": 20,
+      "labelFont": "Helvetica",
+      "labelFontSize": 20,
+      "titleFont": "Helvetica",
+      "labelAngle": 0
+    }
+  }
+}

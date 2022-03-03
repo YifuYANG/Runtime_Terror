@@ -8,19 +8,26 @@ import app.constant.UserLevel;
 import app.constant.VaccinationCenter;
 import app.dao.AppointmentDao;
 import app.model.Appointment;
-import app.repository.AppointmentRepository;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.Date;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Controller
 public class IndexController {
+
+    @Value("classpath:vega-lite/brand-popularity.json")
+    private Resource dosePopularityFile;
 
     @Autowired
     AppointmentDao appointmentDao;
@@ -121,6 +128,20 @@ public class IndexController {
         System.out.println(appointment);
         appointmentDao.save(appointment);
         return "OK";
+    }
+
+    @GetMapping("/vis/dose-popularity")
+    @ResponseBody
+    public String visualizeDosePopularity() throws IOException {
+        Gson gson = new Gson();
+        String content = Files.readString(dosePopularityFile.getFile().toPath());
+        Map<?, ?> object = gson.fromJson(content, Map.class);
+        List<Map<Object, Object>> values = (List<Map<Object, Object>>) ((Map<Object, Object>)object.get("data")).get("values");
+        for(Map<Object, Object> value : values) {
+            if(value.get("Brand").equals("Moderna")) value.put("Frequency", appointmentDao.getNumberOfPfizer());
+            else value.put("Frequency", appointmentDao.getNumberOfModerna());
+        }
+        return gson.toJson(object);
     }
 
     private Date convertDate(String strDate) throws ParseException {
