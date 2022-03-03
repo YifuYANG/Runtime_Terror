@@ -50,6 +50,8 @@ public class AppointmentDao {
 
     public Appointment findAppointmentByDateAndSlot(Date date, DoseSlot slot) { return appointmentRepository.findAppointmentByDateAndSlot(date, slot); }
 
+    public Appointment findSecondAppointmentByDateAndSlot(Date date, DoseSlot slot) { return appointmentRepository.findSecondAppointmentByDateAndSlot(date, slot); }
+
     @Transactional
     public void updateDose1(Long id) {
         appointmentRepository.updateDose1(id);

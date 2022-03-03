@@ -36,6 +36,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("select a from Appointment a where a.dose_1_date = :date and a.dose_1_Slot = :slot")
     Appointment findAppointmentByDateAndSlot(@Param("date")Date date, @Param("slot")DoseSlot slot);
 
+    @Query("select a from Appointment a where a.dose_2_date = :date and a.dose_2_slot = :slot")
+    Appointment findSecondAppointmentByDateAndSlot(@Param("date")Date date, @Param("slot")DoseSlot slot);
+
     @Modifying
     @Query("update Appointment set dose_1_status = 1 where appointment_id = :appointment_id")
     void updateDose1(@Param("appointment_id") Long appointment_id);

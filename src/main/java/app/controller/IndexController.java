@@ -75,8 +75,8 @@ public class IndexController {
         System.out.println("----------"+form.get("slot").toString());
 
         //String slot = form.get("slot").toString();
-        DoseSlot slot = DoseSlot.MORNING;
-        System.out.println(slot);
+        DoseSlot slot;
+
         switch (form.get("slot").toString()){
             case "MORNING":
                 slot = DoseSlot.MORNING;
@@ -136,11 +136,42 @@ public class IndexController {
         if(appointment.getDose_1_status()==DoseStatus.PENDING){
             return "Dose status is pending, please return later to book again";
         }
+        if(appointment.getDose_1_status()==DoseStatus.RECEIVED){
+            return "You have received the vaccination, thank you for using our services!";
+        }
 
         appointment.setDose_2_brand(appointment.getDose_1_brand());
 
         Date sqlDate = convertDate((String) form.get("date"));
+        if(appointmentDao.findAllByDate2(sqlDate).size()>=3){
+            System.out.println("all slots taking on this date");
+            return "All slots taking for this date please try another!";
+        }
         appointment.setDose_2_date(sqlDate);
+
+        DoseSlot slot;
+
+        switch (form.get("slot").toString()){
+            case "MORNING":
+                slot = DoseSlot.MORNING;
+                break;
+            case "AFTERNOON":
+                slot = DoseSlot.AFTERNOON;
+                break;
+            case "EVENING":
+                slot = DoseSlot.EVENING;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + form.get("brand"));
+        }
+
+        Appointment exists = appointmentDao.findSecondAppointmentByDateAndSlot(sqlDate,slot);
+        //try to replace this with an sql statement that returns true if t exists
+        if (exists==null) {
+            appointment.setDose_2_slot(slot);
+        }else{
+            return "This slot is taken for this date.";
+        }
 
         switch (String.valueOf(form.get("center"))){
             case "UCD":
