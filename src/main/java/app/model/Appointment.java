@@ -1,6 +1,7 @@
 package app.model;
 
 import app.constant.DoseBrand;
+import app.constant.DoseSlot;
 import app.constant.DoseStatus;
 import app.constant.VaccinationCenter;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,9 @@ public class Appointment {
     private DoseStatus dose_1_status;
     private DoseStatus dose_2_status;
     private Date dose_1_date;
+    private DoseSlot dose_1_Slot;
     private Date dose_2_date;
+    private DoseSlot dose_2_slot;
     private DoseBrand dose_1_brand;
     private DoseBrand dose_2_brand;
 
