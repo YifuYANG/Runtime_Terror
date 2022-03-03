@@ -15,12 +15,17 @@ public class ActivityDao {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    public List<Appointment> findAllActivities() {
-        return appointmentRepository.findAll();
+    public List<ActivityForm> findAllActivities() {
+        List<ActivityForm> results = convertToVO(appointmentRepository.findAll());
+        return results;
     }
 
     public List<ActivityForm> findAllActivitiesByUserId(Long id) {
-        List<Appointment> appointments=appointmentRepository.findAllByUserId(id);
+        List<ActivityForm> results = convertToVO(appointmentRepository.findAllByUserId(id));
+        return results;
+    }
+
+    private List<ActivityForm> convertToVO(List<Appointment> appointments) {
         List<ActivityForm> results = new ArrayList<>();
         for(Appointment a : appointments) {
             ActivityForm activity = new ActivityForm();
@@ -74,7 +79,6 @@ public class ActivityDao {
             }
             results.add(activity);
         }
-
         return results;
     }
 

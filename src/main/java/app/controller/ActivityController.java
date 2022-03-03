@@ -5,7 +5,6 @@ import app.annotation.access.RestrictUserAccess;
 import app.bean.TokenPool;
 import app.constant.UserLevel;
 import app.dao.ActivityDao;
-import app.model.User;
 import app.repository.UserRepository;
 import app.vo.ActivityForm;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +34,20 @@ public class ActivityController {
     @RestrictUserAccess(requiredLevel = UserLevel.ANY)
     @GetMapping
     public String activityPage(@RequestHeader("token") String token, Model model) {
-        Long userid=tokenPool.getUserIdByToken(token);
-        User user=userRepository.findByUserId(userid);
-        List<ActivityForm> activities = activityDao.findAllActivitiesByUserId(userid);
-        model.addAttribute("user", user.getLast_name());
+        Long userid = tokenPool.getUserIdByToken(token);
+        String userName = userRepository.findByUserId(userid).getFirst_name();
+        List<ActivityForm> activities;
+        if(!userIsAdmin(userid))
+            activities = activityDao.findAllActivitiesByUserId(userid);
+        else
+            activities = activityDao.findAllActivities();
+        model.addAttribute("user", userName);
         model.addAttribute("activities", activities);
         return "activity";
     }
+
+    private boolean userIsAdmin(Long userId) {
+        return userRepository.findById(userId).get().getUserLevel() == UserLevel.ADMIN;
+    }
+
 }
