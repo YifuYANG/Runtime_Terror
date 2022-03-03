@@ -20,12 +20,9 @@
   "config": {
     "autosize": "fit",
     "axis": {
-      "titleColor": "blue",
-      "titleFontWeight": "normal",
-      "titleFontSize": 20,
+      "title": "none",
       "labelFont": "Helvetica",
       "labelFontSize": 20,
-      "titleFont": "Helvetica",
       "labelAngle": 0
     }
   }

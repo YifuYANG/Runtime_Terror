@@ -127,5 +127,15 @@ function exit() {
 }
 
 function renderVis() {
-    vegaEmbed('#vis', vegaData)
+    let xhr = new XMLHttpRequest()
+    xhr.open("GET", "/vis/dose-popularity",true)
+    xhr.setRequestHeader("Content-Type","application/json")
+    xhr.onload = function () {
+        if(this.status === 200) {
+            let spec = JSON.parse(this.responseText)
+            vegaEmbed("#vis", spec)
+        }
+        else alert("Data Visualisation chart is unavailable, HTTP status code = " + this.status)
+    }
+    xhr.send()
 }

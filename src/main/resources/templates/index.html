@@ -7,9 +7,9 @@
     <script type="text/javascript" th:src="@{/js/index.js}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" />
-    <script src="https://cdn.jsdelivr.net/npm/vega@5.21.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.2.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.20.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2/build/vega.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.1/build/vega-lite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.20.1/build/vega-embed.min.js"></script>
 </head>
 
 <body onload="indexLoading()">
@@ -70,7 +70,11 @@
             </div>
         </form>
 
+        <label style="border-top: black 1px solid; width: 100%; margin-top: 3%; padding-top: 3%">Statistics</label><br>
         <div id="vis"></div>
+        <script>
+            renderVis()
+        </script>
 
     </div>
 </body>
