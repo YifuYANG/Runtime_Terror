@@ -21,4 +21,4 @@ mvn spring-boot:run
 ````
 Once running, [Click here](http://localhost/) (localhost:80/) to visit application.
 
-## More details can be found in [Group Report]()
+## More details can be found in [Group Report](Group Report.docx)
