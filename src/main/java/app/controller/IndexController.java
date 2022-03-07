@@ -19,6 +19,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 public class IndexController {
@@ -118,7 +119,7 @@ public class IndexController {
         appointment.setDose_1_status(DoseStatus.PENDING);
         System.out.println(appointment);
         appointmentDao.save(appointment);
-        return "OK";
+        return "Thank you for booking your first appointment";
     }
 
     @RestrictUserAccess(requiredLevel = UserLevel.CLIENT)
@@ -136,16 +137,32 @@ public class IndexController {
         if(appointment.getDose_1_status()==DoseStatus.PENDING){
             return "Dose status is pending, please return later to book again";
         }
-        if(appointment.getDose_1_status()==DoseStatus.RECEIVED){
+        if(appointment.getDose_2_status()==DoseStatus.RECEIVED){
             return "You have received the vaccination, thank you for using our services!";
         }
 
-        appointment.setDose_2_brand(appointment.getDose_1_brand());
+        switch (form.get("brand").toString()){
+            case "PFIZER":
+                appointment.setDose_2_brand(DoseBrand.PFIZER);
+                break;
+            case "MODERNA":
+                appointment.setDose_2_brand(DoseBrand.MODERNA);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + form.get("brand"));
+        }
 
         Date sqlDate = convertDate((String) form.get("date"));
         if(appointmentDao.findAllByDate2(sqlDate).size()>=3){
             System.out.println("all slots taking on this date");
             return "All slots taking for this date please try another!";
+        }
+        Date first_date = appointment.getDose_1_date();
+        Date second_date = sqlDate;
+        long diffInMill = Math.abs(second_date.getTime()-first_date.getTime());
+        long diff = TimeUnit.DAYS.convert(diffInMill, TimeUnit.MILLISECONDS);
+        if (diff < 21) {
+            return "there must be three weeks between your first and second appointment!";
         }
         appointment.setDose_2_date(sqlDate);
 
@@ -166,7 +183,7 @@ public class IndexController {
         }
 
         Appointment exists = appointmentDao.findSecondAppointmentByDateAndSlot(sqlDate,slot);
-        //try to replace this with an sql statement that returns true if t exists
+        //try to replace this with a sql statement that returns true if t exists
         if (exists==null) {
             appointment.setDose_2_slot(slot);
         }else{
@@ -190,7 +207,7 @@ public class IndexController {
         appointment.setDose_2_status(DoseStatus.PENDING);
         System.out.println(appointment);
         appointmentDao.save(appointment);
-        return "OK";
+        return "Thank you for booking your second appointment";
     }
 
     @GetMapping("/vis/dose-popularity")
