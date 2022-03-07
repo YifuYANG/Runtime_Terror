@@ -13,6 +13,20 @@
 </head>
 
 <body>
+       <nav class="navbar navbar-default">
+              <div class="container-fluid">
+                     <div class="navbar-header">
+                            <a class="navbar-brand" href="#">Vaccination Assistant</a>
+                     </div>
+                     <ul class="nav navbar-nav">
+                            <li class="active"><a href="/index">Home</a></li>
+                            <li><a href="/login">Login</a></li>
+                            <li><a href="/index">Book First Appointment</a></li>
+                            <li><a href="/appointment2">Book Second Appointment</a></li>
+                            <li><a href="/forum">Forum</a></li>
+                     </ul>
+              </div>
+       </nav>
        <div class="container">
               <div class="row">
                      <div class="col-md-6 col-md-offset-3">
@@ -59,14 +73,16 @@
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('date_of_birth')}? 'has-error':''">
                                           <label for="date_of_birth" class="control-label">Date Of Birth</label>
-                                          <input id="date_of_birth" type="date"  min="1920-01-01" max="2004-03-01"class="form-control" th:field="*{date_of_birth}" />
+                                          <input id="date_of_birth" type="date" min="1920-01-01" max="2004-03-01"
+                                                 class="form-control" th:field="*{date_of_birth}" />
                                           <p class="error-message" th:each="error : ${#fields.errors('date_of_birth')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('PPS_number')}? 'has-error':''">
                                           <label for="PPS_number" class="control-label">PPS Number</label>
-                                          <input id="PPS_number" minlength="8" maxlength="8" class="form-control" th:field="*{PPS_number}" />
+                                          <input id="PPS_number" minlength="8" maxlength="8" class="form-control"
+                                                 th:field="*{PPS_number}" />
                                           <p class="error-message" th:each="error : ${#fields.errors('PPS_number')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
@@ -80,9 +96,11 @@
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('userLevel')}? 'has-error':''">
                                           <label for="ADMIN" class="control-label">Administrator</label>
-                                          <input type="radio" id="admin" class="form-radio" th:field="*{userLevel}" value="ADMIN"/>
+                                          <input type="radio" id="admin" class="form-radio" th:field="*{userLevel}"
+                                                 value="ADMIN" />
                                           <label for="CLIENT" class="control-label">Client</label>
-                                          <input type="radio" id="client" class="form-radio" th:field="*{userLevel}" value="CLIENT"/>
+                                          <input type="radio" id="client" class="form-radio" th:field="*{userLevel}"
+                                                 value="CLIENT" />
                                           <p class="error-message" th:each="error : ${#fields.errors('userLevel')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
@@ -103,7 +121,7 @@
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('password')}? 'has-error':''">
                                           <label for="password" class="control-label">Password</label>
-                                          <input id="password"  minlength="6" class="form-control" type="password"
+                                          <input id="password" minlength="6" class="form-control" type="password"
                                                  th:field="*{password}" />
                                           <p class="error-message" th:each="error : ${#fields.errors('password')}"
                                                  th:text="${error}">Validation error</p>
@@ -127,8 +145,9 @@
                                                  th:text="${error}">Validation error</p>
                                    </div> -->
                                    <div class="form-group">
-                                          
-                                          <button type="submit" class="btn btn-success" onclick="Register()">Register</button>
+
+                                          <button type="submit" class="btn btn-success"
+                                                 onclick="Register()">Register</button>
                                           <button type="reset" class="btn btn-clear">Clear Form</button>
                                           <span>Already registered? <a href="/" th:href="@{/login}">Login
                                                         here</a></span>
