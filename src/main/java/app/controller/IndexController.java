@@ -50,11 +50,12 @@ public class IndexController {
         if(appointmentDao.findByUserId(tokenPool.getUserIdByToken(token))!=null){
             System.out.println("first appointment already booked");
             return "You have already booked your first appointment, " +
-                    "please book your second appointment";
+                    "please book your second appointment" +
+                    ", or go to activities page to view details";
         }
 
         appointment.setUser_id(tokenPool.getUserIdByToken(token));
-
+        /**Vaccination Brand*/
         switch (form.get("brand").toString()){
             case "PFIZER":
                 appointment.setDose_1_brand(DoseBrand.PFIZER);
@@ -65,44 +66,26 @@ public class IndexController {
             default:
                 throw new IllegalStateException("Unexpected value: " + form.get("brand"));
         }
-
+        /**Vaccination Date and Slot validation*/
         Date sqlDate = convertDate((String) form.get("date"));
         if(appointmentDao.findAllByDate1(sqlDate).size()>=3){
-            System.out.println("all slots taking on this date");
             return "All slots taking for this date please try another!";
         }
         appointment.setDose_1_date(sqlDate);
 
-        System.out.println("----------"+form.get("slot").toString());
+        String slot_string = form.get("slot").toString();
+        DoseSlot doseSlot = setSlot(slot_string);
 
-        //String slot = form.get("slot").toString();
-        DoseSlot slot;
+        Appointment exists = appointmentDao.findAppointmentByDateAndSlot(sqlDate,doseSlot);
 
-        switch (form.get("slot").toString()){
-            case "MORNING":
-                slot = DoseSlot.MORNING;
-                break;
-            case "AFTERNOON":
-                slot = DoseSlot.AFTERNOON;
-                break;
-            case "EVENING":
-                slot = DoseSlot.EVENING;
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + form.get("brand"));
-        }
-
-        System.out.println(slot);
-        Appointment exists = appointmentDao.findAppointmentByDateAndSlot(sqlDate,slot);
-        System.out.println(exists);
         //try to replace this with an sql statement that returns true if t exists
         if (exists==null) {
-            appointment.setDose_1_Slot(slot);
+            appointment.setDose_1_Slot(doseSlot);
         }else{
             return "This slot is taken for this date.";
         }
 
-
+        /** Vaccination Center*/
         switch (String.valueOf(form.get("center"))){
             case "UCD":
                 appointment.setDose_1_center(VaccinationCenter.UCD);
@@ -128,6 +111,7 @@ public class IndexController {
     public String bookSecondAppointment(@RequestHeader("token") String token, @RequestBody Map<String, Object> form) throws ParseException {
         System.out.println(tokenPool.getUserIdByToken(token));
 
+        /** Initial validation checks for second appointment*/
         if(appointmentDao.findByUserId(tokenPool.getUserIdByToken(token))==null){
             System.out.println("Must book first appointment");
             return "You must book your first appointment before your second " +
@@ -137,10 +121,14 @@ public class IndexController {
         if(appointment.getDose_1_status()==DoseStatus.PENDING){
             return "Dose status is pending, please return later to book again";
         }
-        if(appointment.getDose_2_status()==DoseStatus.RECEIVED){
+        if(appointment.getDose_2_status()==DoseStatus.PENDING){
+            return "Dose status is pending, please go to activities page to view details";
+        }
+        else if(appointment.getDose_2_status()==DoseStatus.RECEIVED){
             return "You have received the vaccination, thank you for using our services!";
         }
 
+        /** Vaccination brand*/
         switch (form.get("brand").toString()){
             case "PFIZER":
                 appointment.setDose_2_brand(DoseBrand.PFIZER);
@@ -152,35 +140,24 @@ public class IndexController {
                 throw new IllegalStateException("Unexpected value: " + form.get("brand"));
         }
 
+        /**Vaccination Date and Slot validation*/
         Date sqlDate = convertDate((String) form.get("date"));
         if(appointmentDao.findAllByDate2(sqlDate).size()>=3){
             System.out.println("all slots taking on this date");
             return "All slots taking for this date please try another!";
         }
+
         Date first_date = appointment.getDose_1_date();
         Date second_date = sqlDate;
         long diffInMill = Math.abs(second_date.getTime()-first_date.getTime());
         long diff = TimeUnit.DAYS.convert(diffInMill, TimeUnit.MILLISECONDS);
         if (diff < 21) {
-            return "there must be three weeks between your first and second appointment!";
+            return "There must be three weeks between your first and second appointment!";
         }
         appointment.setDose_2_date(sqlDate);
 
-        DoseSlot slot;
-
-        switch (form.get("slot").toString()){
-            case "MORNING":
-                slot = DoseSlot.MORNING;
-                break;
-            case "AFTERNOON":
-                slot = DoseSlot.AFTERNOON;
-                break;
-            case "EVENING":
-                slot = DoseSlot.EVENING;
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + form.get("brand"));
-        }
+        String slot_string = form.get("slot").toString();
+        DoseSlot slot = setSlot(slot_string);
 
         Appointment exists = appointmentDao.findSecondAppointmentByDateAndSlot(sqlDate,slot);
         //try to replace this with a sql statement that returns true if t exists
@@ -190,6 +167,7 @@ public class IndexController {
             return "This slot is taken for this date.";
         }
 
+        /** Vaccination Center*/
         switch (String.valueOf(form.get("center"))){
             case "UCD":
                 appointment.setDose_2_center(VaccinationCenter.UCD);
@@ -230,4 +208,21 @@ public class IndexController {
         return sqlDate;
     }
 
+    private DoseSlot setSlot(String slot_string){
+        DoseSlot doseSlot;
+        switch (slot_string){
+            case "MORNING":
+                doseSlot = DoseSlot.MORNING;
+                break;
+            case "AFTERNOON":
+                doseSlot = DoseSlot.AFTERNOON;
+                break;
+            case "EVENING":
+                doseSlot = DoseSlot.EVENING;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + slot_string);
+        }
+        return doseSlot;
+    }
 }
