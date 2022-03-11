@@ -6,10 +6,25 @@
     <title>Forum</title>
     <script type="text/javascript" th:src="@{/js/forum.js}"></script>
     <script type="text/javascript" th:src="@{/js/index.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" />
     <link rel="stylesheet" type="text/css" th:href="@{/css/forum.css}">
 </head>
 
 <body>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Vaccination Assistant</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/index">Home</a></li>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/index">Book First Appointment</a></li>
+                <li><a href="/appointment2">Book Second Appointment</a></li>
+                <li><a href="/forum">Forum</a></li>
+            </ul>
+        </div>
+    </nav>
     <div class="general">
         <h1>Public forum:</h1>
         <table class="chatArea" th:each="post : ${posts}" >
