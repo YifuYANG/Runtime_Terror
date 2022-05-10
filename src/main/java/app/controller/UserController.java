@@ -48,8 +48,12 @@ public class UserController {
         if(existing != null){
             result.rejectValue("Email", null, "An account already exists for this email");
         }
+
         if (result.hasErrors() || !emailValidator(newUser.getEmail())){
             return "redirect:/register?tryAgain";
+        }
+        if(!passwordValidator(newUser.getPassword())){
+            return "redirect:/register?passwordError";
         }
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         userRepository.save(newUser);
@@ -77,6 +81,14 @@ public class UserController {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
+
+    private Boolean passwordValidator(String password){
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()?])(?=\\S+$).{8,20}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(password);
+        return matcher.matches();
+    }
+
 
     // Get All Users
     @GetMapping("/Users")

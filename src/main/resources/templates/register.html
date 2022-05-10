@@ -38,7 +38,13 @@
                             </div>
                             <div th:if="${param.tryAgain}">
                                    <div class="alert alert-info">
-                                          It Seems there is an error while registering. Please try again!
+                                          It Seems there is an error with your email while registering. Please try again!
+                                   </div>
+                            </div>
+                            <div th:if="${param.passwordError}">
+                                   <div class="alert alert-info">
+                                          Passwords must be between 8 and 20 characters long, an upper case character, 
+                                          a number and a special character must appear atleast once. Please try again!
                                    </div>
                             </div>
 
@@ -121,7 +127,7 @@
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('password')}? 'has-error':''">
                                           <label for="password" class="control-label">Password</label>
-                                          <input id="password" minlength="6" class="form-control" type="password"
+                                          <input id="password" minlength="8" class="form-control" type="password"
                                                  th:field="*{password}" />
                                           <p class="error-message" th:each="error : ${#fields.errors('password')}"
                                                  th:text="${error}">Validation error</p>

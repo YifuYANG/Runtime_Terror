@@ -37,3 +37,28 @@ function checkEmail(){
         alert("Invalid email address! please try again");
     }
 }
+
+function checkPassword(){
+    regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()])(?=\\S+$).{8, 20}$/;
+    if (info.password.match(validRegex) && info.password.length >= 5 && info.password.length <= 25) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/register", false)
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.getResponseHeader('content-type') === 'application/json') {
+                    var result = JSON.parse(xhr.responseText);
+                    if (result.status === 'success') {
+                        sessionStorage.setItem("token", JSON.stringify(result.token));
+                        window.location.href = "/"
+                    } else {
+                        alert(result.msg);
+                    }
+                }
+            }
+        }
+        xhr.send(JSON.stringify(info));
+    } else {
+        alert("Invalid email address! please try again");
+    }
+}
