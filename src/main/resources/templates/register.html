@@ -7,16 +7,19 @@
        <meta name="viewport" content="width=device-width, initial-scale=1" />
        <script type="text/javascript" th:src="@{/js/register.js}"></script>
        <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" />
+       <!-- CSS only -->
+       <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"> -->
        <link rel="stylesheet" type="text/css" th:href="@{/css/userreg.css}" />
 
        <title>Registration</title>
 </head>
 
 <body>
+       <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light"> -->
        <nav class="navbar navbar-default">
               <div class="container-fluid">
                      <div class="navbar-header">
-                            <a class="navbar-brand" href="#">Vaccination Assistant</a>
+                            <a class="navbar-brand" href="/index">Vaccination Assistant</a>
                      </div>
                      <ul class="nav navbar-nav">
                             <li class="active"><a href="/index">Home</a></li>
@@ -30,15 +33,19 @@
        <div class="container">
               <div class="row">
                      <div class="col-md-6 col-md-offset-3">
-
                             <div th:if="${param.success}">
                                    <div class="alert alert-info">
                                           You've successfully registered to be vaccinated!
                                    </div>
                             </div>
+                            <div th:if="${param.empty}">
+                                   <div class="alert alert-info">
+                                          Make sure to fill in all fields.
+                                   </div>
+                            </div>
                             <div th:if="${param.tryAgain}">
                                    <div class="alert alert-info">
-                                          It Seems there is an error with your email while registering. Please try again!
+                                          It seems there is an error with your while registering. Please try again!
                                    </div>
                             </div>
                             <div th:if="${param.passwordError}">
@@ -47,9 +54,14 @@
                                           a number and a special character must appear atleast once. Please try again!
                                    </div>
                             </div>
+                            <div th:if="${param.ppsnError}">
+                                   <div class="alert alert-info">
+                                          PPS number must be in the right format.
+                                   </div>
+                            </div>
 
                             <h1>Registration</h1>
-                            <form th:action="@{/register}" th:object="${user}" method="POST">
+                            <form name="form" th:action="@{/register}" th:object="${user}" method="POST">
 
                                    <p class="error-message" th:if="${#fields.hasGlobalErrors()}"
                                           th:each="error : ${#fields.errors('global')}" th:text="${error}">Validation
@@ -58,21 +70,21 @@
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('first_name')}? 'has-error':''">
                                           <label for="first_name" class="control-label">First name</label>
-                                          <input id="first_name" class="form-control" th:field="*{first_name}" />
+                                          <input id="first_name" class="form-control" th:field="*{first_name}" required/>
                                           <p class="error-message" th:each="error: ${#fields.errors('first_name')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('last_name')}? 'has-error':''">
                                           <label for="last_name" class="control-label">Last name</label>
-                                          <input id="last_name" class="form-control" th:field="*{last_name}" />
+                                          <input id="last_name" class="form-control" th:field="*{last_name}" required/>
                                           <p class="error-message" th:each="error : ${#fields.errors('last_name')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('nationality')}? 'has-error':''">
                                           <label for="nationality" class="control-label">Nationality</label>
-                                          <input id="nationality" class="form-control" th:field="*{nationality}" />
+                                          <input id="nationality" class="form-control" th:field="*{nationality}" required/>
                                           <p class="error-message" th:each="error : ${#fields.errors('nationality')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
@@ -80,7 +92,7 @@
                                           th:classappend="${#fields.hasErrors('date_of_birth')}? 'has-error':''">
                                           <label for="date_of_birth" class="control-label">Date Of Birth</label>
                                           <input id="date_of_birth" type="date" min="1920-01-01" max="2004-03-01"
-                                                 class="form-control" th:field="*{date_of_birth}" />
+                                                 class="form-control" th:field="*{date_of_birth}" required/>
                                           <p class="error-message" th:each="error : ${#fields.errors('date_of_birth')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
@@ -88,18 +100,19 @@
                                           th:classappend="${#fields.hasErrors('PPS_number')}? 'has-error':''">
                                           <label for="PPS_number" class="control-label">PPS Number</label>
                                           <input id="PPS_number" minlength="8" maxlength="8" class="form-control"
-                                                 th:field="*{PPS_number}" />
+                                                 th:field="*{PPS_number}" required pattern="\d{6}[a-zA-Z]{2}"
+                                                 title="Follow the format of 6 digits and 2 letters at the end."/>
                                           <p class="error-message" th:each="error : ${#fields.errors('PPS_number')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('phone_number')}? 'has-error':''">
                                           <label for="phone_number" class="control-label">Phone Number</label>
-                                          <input id="phone_number" class="form-control" th:field="*{phone_number}" />
+                                          <input id="phone_number" class="form-control" th:field="*{phone_number}" required/>
                                           <p class="error-message" th:each="error : ${#fields.errors('phone_number')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
-                                   <div class="form-group"
+                                   <!-- <div class="form-group"
                                           th:classappend="${#fields.hasErrors('userLevel')}? 'has-error':''">
                                           <label for="ADMIN" class="control-label">Administrator</label>
                                           <input type="radio" id="admin" class="form-radio" th:field="*{userLevel}"
@@ -109,11 +122,12 @@
                                                  value="CLIENT" />
                                           <p class="error-message" th:each="error : ${#fields.errors('userLevel')}"
                                                  th:text="${error}">Validation error</p>
-                                   </div>
+                                   </div> -->
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('email')}? 'has-error':''">
                                           <label for="email" class="control-label">E-mail</label>
-                                          <input type="email" id="email" class="form-control" th:field="*{email}" />
+                                          <input type="email" id="email" class="form-control" th:field="*{email}" required 
+                                          />
                                           <p class="error-message" th:each="error : ${#fields.errors('email')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
@@ -128,7 +142,9 @@
                                           th:classappend="${#fields.hasErrors('password')}? 'has-error':''">
                                           <label for="password" class="control-label">Password</label>
                                           <input id="password" minlength="8" class="form-control" type="password"
-                                                 th:field="*{password}" />
+                                                 th:field="*{password}" required
+                                                 pattern="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()?])(?=\S+$).{8,20}$"
+                                                 title="Must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters"/>
                                           <p class="error-message" th:each="error : ${#fields.errors('password')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
@@ -150,8 +166,8 @@
                                           <p class="error-message" th:each="error : ${#fields.errors('terms')}"
                                                  th:text="${error}">Validation error</p>
                                    </div> -->
+                                   <br>
                                    <div class="form-group">
-
                                           <button type="submit" class="btn btn-success"
                                                  onclick="Register()">Register</button>
                                           <button type="reset" class="btn btn-clear">Clear Form</button>

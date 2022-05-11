@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.constant.UserLevel;
 import app.exception.UserNotFoundException;
 import app.model.User;
 import app.repository.UserRepository;
@@ -41,29 +42,37 @@ public class UserController {
     // Create a new User
     @PostMapping
     public String RegisterUser(@ModelAttribute("newUser") User newUser, BindingResult result) {
+        newUser.setUserLevel(UserLevel.CLIENT);
+
         if(checkForEmpty(newUser)){
-            return "redirect:/register";
+            return "redirect:/register?empty";
         }
+
         User existing = userRepository.findByUserEmail(newUser.getEmail());
         if(existing != null){
             result.rejectValue("Email", null, "An account already exists for this email");
         }
-
+        if(!ppsValidator(newUser.getPPS_number())){
+            return "redirect:/register?ppsnError";
+        }
         if (result.hasErrors() || !emailValidator(newUser.getEmail())){
             return "redirect:/register?tryAgain";
         }
         if(!passwordValidator(newUser.getPassword())){
             return "redirect:/register?passwordError";
         }
+        System.out.println("this far ?");
+        System.out.println(newUser.getPPS_number().getClass());
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         userRepository.save(newUser);
+        System.out.println("this far ??");
         return "redirect:/register?success";
     }
 
     private boolean checkForEmpty(User newUser) {
         if( newUser.getFirst_name() == null || newUser.getLast_name()==null||
             newUser.getNationality() == null || newUser.getDate_of_birth() ==null||
-            newUser.getPPS_number() == 0 || newUser.getPhone_number() ==0||
+            newUser.getPPS_number() == null || newUser.getPhone_number() == 0||
             newUser.getEmail()==null || newUser.getUserLevel()==null||
             newUser.getPassword() == null)
         {
@@ -89,6 +98,13 @@ public class UserController {
         return matcher.matches();
     }
 
+    private Boolean ppsValidator(String ppsNumber){
+        /** Six Digits then two letters for PPSN*/
+        String regex = "\\d{6}[a-zA-Z]{2}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(ppsNumber);
+        return matcher.matches();
+    }
 
     // Get All Users
     @GetMapping("/Users")

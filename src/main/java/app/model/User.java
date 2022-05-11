@@ -15,15 +15,15 @@ public class User {
     private Long userId;
 
     @NotBlank
-    private String first_name, last_name, password, email, nationality;
+    private String first_name, last_name, password, email, nationality, PPS_number;
     private LocalDate date_of_birth;
-    private long PPS_number, phone_number;
+    private long phone_number;
     private UserLevel userLevel;
 
     public User() {super();}
     public User(long userId, String first_name, String last_name, String password,
                 String email_address, String nationality, String date_of_birth,
-                long PPS_number, long phone_number, UserLevel userLevel) throws ParseException {
+                String PPS_number, long phone_number, UserLevel userLevel) throws ParseException {
         super();
         this.userId = userId;
         this.first_name = first_name;
@@ -95,11 +95,11 @@ public class User {
         this.date_of_birth = date;
     }
 
-    public long getPPS_number() {
+    public String getPPS_number() {
         return PPS_number;
     }
 
-    public void setPPS_number(long PPS_number) {
+    public void setPPS_number(String PPS_number) {
         this.PPS_number = PPS_number;
     }
 
