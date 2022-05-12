@@ -1,7 +1,7 @@
 package app.controller;
 
 import app.bean.TokenPool;
-import app.constant.UserLevel;
+import app.dao.AttemptLimitationDao;
 import app.model.User;
 import app.repository.UserRepository;
 import app.vo.LoginForm;
@@ -30,16 +30,9 @@ public class UserLoginController {
     private UserRepository userRepository;
     @Autowired
     private BCryptPasswordEncoder encoder;
+    @Autowired
+    private AttemptLimitationDao attemptLimitationDao;
 
-
-    //access rate limitation
-    private final Bucket bucket;
-    public UserLoginController() {
-        Bandwidth limit = Bandwidth.classic(5, Refill.greedy(5, Duration.ofMinutes(1)));
-        this.bucket = Bucket4j.builder()
-                .addLimit(limit)
-                .build();
-    }
 
     //login user
     //adding encoder method
@@ -48,31 +41,36 @@ public class UserLoginController {
     public Map<String, Object> login(@RequestBody LoginForm loginForm) {
         Map<String, Object> map = new HashMap<>(3);
         User user = userRepository.findByUserEmail(loginForm.getUserEmail());
-        //check whether the request is allowed by consuming a token from the bucket
-        if(bucket.tryConsume(1)){
-            if (!emailValidator(loginForm.getUserEmail())){
-                map.put("status", "fail");
-                map.put("msg", "Wrong email type.");
-            } else if(user == null){
-                map.put("status", "fail");
-                map.put("msg", "Account does not exist.");
-            } else if(!encoder.matches(loginForm.getPassword(),user.getPassword())){
+
+        if(user == null){
+            map.put("status", "fail");
+            map.put("msg", "Account does not exist.");
+        } else if(loginForm.getPassword().equals("")){
+            map.put("status", "fail");
+            map.put("msg", "Password filed should not be empty.");
+        } else if (!emailValidator(loginForm.getUserEmail())){
+            map.put("status", "fail");
+            map.put("msg", "Wrong email type.");
+        } else if(!attemptLimitationDao.unlockWhenTimeExpired(user)){
+            map.put("status", "fail");
+            map.put("msg", "Too many request, you account has been licked for 20 mines");
+        } else {
+             if(!encoder.matches(loginForm.getPassword(),user.getPassword())){
+                if(user.getFailedAttempts()> 2){
+                    attemptLimitationDao.lock(user);
+                } else {
+                    attemptLimitationDao.increaseFailedAttempts(user);
+                }
                 map.put("status", "fail");
                 map.put("msg", "Wrong username or password.");
             } else {
                 String token = tokenPool.generateToken();
                 tokenPool.login(user.getUserId(), token);
-                log.info(user.getUserLevel() == UserLevel.ADMIN ? "User:":"Admin:"
-                        + "Token issued to id = " + user.getUserId() + ", user name = " + user.getFirst_name()
-                        + ", Token = " + token
-            );
+                log.info("Token issued to " + user.getUserId());
+                attemptLimitationDao.resetFailedAttempts(user);
                 map.put("status", "success");
                 map.put("token", token);
             }
-        } else {
-            log.warn("User account = " + loginForm.getUserEmail() + " is suspended for multiple failed authentication.");
-            map.put("status", "fail");
-            map.put("msg", "Too many requests, you can try again after one minute");
         }
         return map;
     }

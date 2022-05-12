@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
@@ -19,11 +20,15 @@ public class User {
     private LocalDate date_of_birth;
     private long phone_number;
     private UserLevel userLevel;
+    private boolean accountLocked = false;
+    private int failedAttempts =0;
+    private Date lock_time;
 
     public User() {super();}
     public User(long userId, String first_name, String last_name, String password,
                 String email_address, String nationality, String date_of_birth,
-                String PPS_number, long phone_number, UserLevel userLevel) throws ParseException {
+                String PPS_number, long phone_number, UserLevel userLevel, boolean accountNonLocked,
+                int failedAttempts, Date lock_time) throws ParseException {
         super();
         this.userId = userId;
         this.first_name = first_name;
@@ -35,6 +40,33 @@ public class User {
         this.PPS_number = PPS_number;
         this.phone_number = phone_number;
         this.userLevel = userLevel;
+        this.accountLocked = accountNonLocked;
+        this.failedAttempts = failedAttempts;
+        this.lock_time = lock_time;
+    }
+
+    public boolean isAccountLocked() {
+        return accountLocked;
+    }
+
+    public void setAccountLocked(boolean accountNonLocked) {
+        this.accountLocked = accountNonLocked;
+    }
+
+    public int getFailedAttempts() {
+        return failedAttempts;
+    }
+
+    public void setFailedAttempts(int failedAttempts) {
+        this.failedAttempts = failedAttempts;
+    }
+
+    public Date getLock_time() {
+        return lock_time;
+    }
+
+    public void setLock_time(Date lock_time) {
+        this.lock_time = lock_time;
     }
 
     public Long getUserId() {
