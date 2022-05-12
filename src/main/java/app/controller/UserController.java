@@ -67,6 +67,9 @@ public class UserController {
             return "redirect:/register?passwordError";
         }
         if(userRoleValidator(newUser.getUserLevel().toString())){
+            /**
+            I am not sure if I did correctly, I am validating data at back side so attacker wouldn't register admin account using burp
+             */
             return "redirect:/register?registrationError";
         }
 
