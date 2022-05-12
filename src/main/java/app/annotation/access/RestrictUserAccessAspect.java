@@ -39,17 +39,30 @@ public class RestrictUserAccessAspect {
         try {
             String token = (String) joinPoint.getArgs()[0];
             token = token.replaceAll("\"", "");
-            if(token == null || token.length() == 0) throw new AuthenticationException("Access denied, please login first.");
-            if(!tokenPool.containsToken(token)) throw new AuthenticationException("Access denied, invalid token >> " + token);
+            if(token == null || token.length() == 0) {
+                log.warn("Absent token detected");
+                throw new AuthenticationException("Access denied, please login first.");
+            }
+            if(!tokenPool.containsToken(token)) {
+                log.warn("Invalid token detected -> " + token);
+                throw new AuthenticationException("Access denied, invalid token >> " + token);
+            }
             //If token is valid, we need to check whether user level satisfies required level
             Long userId = tokenPool.getUserIdByToken(token);
             //Then check if the token is expired
-            if(!tokenPool.validateTokenExpiry(token, LocalDateTime.now()))
+            if(!tokenPool.validateTokenExpiry(token, LocalDateTime.now())) {
+                log.warn("Expired token detected -> " + token);
                 throw new AuthenticationException("Access denied, your token has been expired, please re-login.");
-            if(requiredLevel == UserLevel.ANY)
+            }
+            if(requiredLevel == UserLevel.ANY) {
+                log.info("Token approved to execute " + method.getName());
                 return joinPoint.proceed();
-            if(userRepository.findById(userId).get().getUserLevel() != requiredLevel)
+            }
+            else if(userRepository.findById(userId).get().getUserLevel() != requiredLevel) {
+                log.warn("Insufficient authorisation detected -> " + token);
                 throw new AuthenticationException("Access denied, you have no privileges to access this content.");
+            }
+            log.info("Token approved to execute " + method.getName());
             return joinPoint.proceed();
         } catch (Exception e) {
             log.warn(e.getMessage());
