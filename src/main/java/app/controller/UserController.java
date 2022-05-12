@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.jasypt.util.text.StrongTextEncryptor;
 
 import javax.validation.Valid;
 import java.text.ParseException;
@@ -34,6 +35,9 @@ public class UserController {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private StrongTextEncryptor ppsnEncoder;
 
     @ModelAttribute("user")
     public User user() {
@@ -80,6 +84,8 @@ public class UserController {
         /**
          PPS, data of birth, and phone number should be encoded before storing in to DB
          */
+        newUser.setPPS_number(ppsnEncoder.encrypt((newUser.getPPS_number())));
+        System.out.println(ppsnEncoder.decrypt(newUser.getPPS_number()));
         userRepository.save(newUser);
         return "redirect:/register?success";
     }
