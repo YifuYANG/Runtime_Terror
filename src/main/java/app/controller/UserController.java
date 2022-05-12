@@ -60,6 +60,9 @@ public class UserController {
         if(!ppsValidator(newUser.getPPS_number())){
             return "redirect:/register?ppsnError";
         }
+        if(!emailValidator(newUser.getEmail())){
+            return "redirect:/register?invalidEmail";
+        }
         if (result.hasErrors() || !emailValidator(newUser.getEmail())){
             return "redirect:/register?tryAgain";
         }

@@ -6,7 +6,8 @@
     <title>Vaccination Assistant</title>
     <script type="text/javascript" th:src="@{/js/index.js}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}">
-    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" />
+    <!-- <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" /> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2/build/vega.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.1/build/vega-lite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.20.1/build/vega-embed.min.js"></script>
@@ -33,7 +34,7 @@
         </div>
 
         <form class="row">
-            <div class="col-md-6 col-md-offset-3">
+            <div class=form>
                 <div class="form-group">
                     <label class="control-label">Please select which dose brand: </label>
                     <select class="form-control" id="dose_select">
@@ -64,6 +65,7 @@
                         <option value="CROKE_PARK">Croke Park</option>
                     </select>
                 </div>
+                <br>
                 <button type="submit" class="btn btn-success" onclick="submitAppointmentForm()">Submit</button>
                 <span>Already Booked First Appointment? <a href="/" th:href="@{/appointment2}">Book
                     second appointment here</a></span>
