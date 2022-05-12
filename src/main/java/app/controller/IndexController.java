@@ -50,7 +50,6 @@ public class IndexController {
         Appointment appointment = new Appointment();
 
         if(appointmentDao.findByUserId(tokenPool.getUserIdByToken(token))!=null){
-            System.out.println("first appointment already booked");
             return "You have already booked your first appointment, " +
                     "please book your second appointment" +
                     ", or go to activities page to view details";
@@ -102,7 +101,7 @@ public class IndexController {
                 throw new IllegalStateException("Unexpected value: " + form.get("center"));
         }
         appointment.setDose_1_status(DoseStatus.PENDING);
-        System.out.println(appointment);
+
         appointmentDao.save(appointment);
         return "Thank you for booking your first appointment";
     }
@@ -111,7 +110,7 @@ public class IndexController {
     @PostMapping("/create-second-appointment")
     @ResponseBody
     public String bookSecondAppointment(@RequestHeader("token") String token, @RequestBody Map<String, Object> form) throws ParseException {
-        System.out.println(tokenPool.getUserIdByToken(token));
+
 
         /** Initial validation checks for second appointment*/
         if(appointmentDao.findByUserId(tokenPool.getUserIdByToken(token))==null){
@@ -145,7 +144,7 @@ public class IndexController {
         /**Vaccination Date and Slot validation*/
         Date sqlDate = convertDate((String) form.get("date"));
         if(appointmentDao.findAllByDate2(sqlDate).size()>=3){
-            System.out.println("all slots taking on this date");
+
             return "All slots taking for this date please try another!";
         }
 
@@ -185,7 +184,7 @@ public class IndexController {
         }
 
         appointment.setDose_2_status(DoseStatus.PENDING);
-        System.out.println(appointment);
+
         appointmentDao.save(appointment);
         log.info("User ID = " + tokenPool.getUserIdByToken(token) + ": booked 2nd appointment successfully.");
         return "Thank you for booking your second appointment";

@@ -14,8 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -33,7 +39,6 @@ public class UserLoginController {
     @Autowired
     private AttemptLimitationDao attemptLimitationDao;
 
-
     //login user
     //adding encoder method
     @PostMapping("/login")
@@ -41,6 +46,15 @@ public class UserLoginController {
     public Map<String, Object> login(@RequestBody LoginForm loginForm) {
         Map<String, Object> map = new HashMap<>(3);
         User user = userRepository.findByUserEmail(loginForm.getUserEmail());
+
+        try {
+            InetAddress inetAddress = InetAddress.getLocalHost();
+            System.out.println(inetAddress);
+            System.out.println(inetAddress.getHostAddress());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
 
         if(user == null){
             map.put("status", "fail");
@@ -53,8 +67,10 @@ public class UserLoginController {
             map.put("msg", "Wrong email type.");
         } else if(!attemptLimitationDao.unlockWhenTimeExpired(user)){
             map.put("status", "fail");
-            map.put("msg", "Too many request, you account has been licked for 20 mines");
+            map.put("msg", "Too many request, your account has been licked for 20 mines");
         } else {
+             attemptLimitationDao.resetAttemptsAfterPeriodOfTime(user);
+             attemptLimitationDao.setLastAttempt(user);
              if(!encoder.matches(loginForm.getPassword(),user.getPassword())){
                 if(user.getFailedAttempts()> 2){
                     attemptLimitationDao.lock(user);
@@ -62,7 +78,7 @@ public class UserLoginController {
                     attemptLimitationDao.increaseFailedAttempts(user);
                 }
                 map.put("status", "fail");
-                map.put("msg", "Wrong username or password.");
+                map.put("msg", "Wrong password.");
             } else {
                 String token = tokenPool.generateToken();
                 tokenPool.login(user.getUserId(), token);

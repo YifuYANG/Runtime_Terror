@@ -66,11 +66,12 @@ public class UserController {
         if(!passwordValidator(newUser.getPassword())){
             return "redirect:/register?passwordError";
         }
-        System.out.println("this far ?");
-        System.out.println(newUser.getPPS_number().getClass());
+        if(userRoleValidator(newUser.getUserLevel().toString())){
+            return "redirect:/register?registrationError";
+        }
+
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         userRepository.save(newUser);
-        System.out.println("this far ??");
         return "redirect:/register?success";
     }
 
@@ -94,6 +95,10 @@ public class UserController {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+
+    private Boolean userRoleValidator(String userLevel){
+        return userLevel.equals("ADMIN");
     }
 
     private Boolean passwordValidator(String password){

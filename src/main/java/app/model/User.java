@@ -23,12 +23,13 @@ public class User {
     private boolean accountLocked = false;
     private int failedAttempts =0;
     private Date lock_time;
+    private Date last_attempt;
 
     public User() {super();}
     public User(long userId, String first_name, String last_name, String password,
                 String email_address, String nationality, String date_of_birth,
                 String PPS_number, long phone_number, UserLevel userLevel, boolean accountNonLocked,
-                int failedAttempts, Date lock_time) throws ParseException {
+                int failedAttempts, Date lock_time, Date last_attempt) throws ParseException {
         super();
         this.userId = userId;
         this.first_name = first_name;
@@ -43,6 +44,15 @@ public class User {
         this.accountLocked = accountNonLocked;
         this.failedAttempts = failedAttempts;
         this.lock_time = lock_time;
+        this.last_attempt = last_attempt;
+    }
+
+    public Date getLast_attempt() {
+        return last_attempt;
+    }
+
+    public void setLast_attempt(Date last_attempt) {
+        this.last_attempt = last_attempt;
     }
 
     public boolean isAccountLocked() {

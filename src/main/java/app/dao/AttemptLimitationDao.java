@@ -11,7 +11,8 @@ import java.util.Date;
 @Service
 @Transactional
 public class AttemptLimitationDao {
-    private static final long LOCK_DURATION = 20 * 60 * 1000; // 1 hours
+    private static final long LOCK_DURATION = 20 * 60 * 1000; // 20 mines
+
     @Autowired
     private UserRepository userRepository;
 
@@ -26,12 +27,26 @@ public class AttemptLimitationDao {
         userRepository.save(user);
     }
 
+    public void setLastAttempt(User user){
+        user.setLast_attempt(new Date());
+        userRepository.save(user);
+    }
     public void lock(User user) {
         user.setAccountLocked(true);
         user.setLock_time(new Date());
         userRepository.save(user);
     }
 
+    public void resetAttemptsAfterPeriodOfTime(User user){
+        if (user.getLast_attempt() != null) {
+            long lastAttemptTimeInMillis = user.getLast_attempt().getTime();
+            long currentTimeInMillis = System.currentTimeMillis();
+            if (lastAttemptTimeInMillis + LOCK_DURATION < currentTimeInMillis) {
+                user.setFailedAttempts(0);
+                userRepository.save(user);
+            }
+        }
+    }
     public boolean unlockWhenTimeExpired(User user) {
         if (user.getLock_time() == null) {
             return true;

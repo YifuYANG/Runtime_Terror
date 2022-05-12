@@ -15,7 +15,6 @@ public class UserDaoImpl implements UserDao {
         String sql = "INSERT INTO Users VALUES(?,?)";
 
         try {
-            System.out.println("helloooo");
             int counter = jdbcTemplate.update(sql, new Object[] { user.getUserId(), user.getPassword() });
 
             return counter;
