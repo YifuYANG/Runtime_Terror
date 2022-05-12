@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 
 @Aspect
 @Component
@@ -42,6 +43,9 @@ public class RestrictUserAccessAspect {
             if(!tokenPool.containsToken(token)) throw new AuthenticationException("Access denied, invalid token >> " + token);
             //If token is valid, we need to check whether user level satisfies required level
             Long userId = tokenPool.getUserIdByToken(token);
+            //Then check if the token is expired
+            if(!tokenPool.validateTokenExpiry(token, LocalDateTime.now()))
+                throw new AuthenticationException("Access denied, your token has been expired, please re-login.");
             if(requiredLevel == UserLevel.ANY)
                 return joinPoint.proceed();
             if(userRepository.findById(userId).get().getUserLevel() != requiredLevel)

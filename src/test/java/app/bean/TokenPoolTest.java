@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 public class TokenPoolTest {
 
     private TokenPool tokenPool = new TokenPool();
@@ -32,4 +34,20 @@ public class TokenPoolTest {
         Assertions.assertFalse(tokenPool.containsToken(mockToken));
     }
 
+    @Test
+    public void manuallyTestGenerateToken() {
+        System.out.println(tokenPool.generateToken());
+    }
+
+    @Test
+    public void testTokenExpiryValidation() {
+        String token = tokenPool.generateToken();
+        Assertions.assertTrue(tokenPool.validateTokenExpiry(token, LocalDateTime.now()));
+    }
+
+    @Test
+    public void testTokenExpiryValidationAssumingExpired() {
+        String token = tokenPool.generateToken();
+        Assertions.assertFalse(tokenPool.validateTokenExpiry(token, LocalDateTime.now().plusHours(3)));
+    }
 }

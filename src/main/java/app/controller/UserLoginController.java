@@ -1,6 +1,7 @@
 package app.controller;
 
 import app.bean.TokenPool;
+import app.constant.UserLevel;
 import app.model.User;
 import app.repository.UserRepository;
 import app.vo.LoginForm;
@@ -61,7 +62,10 @@ public class UserLoginController {
             } else {
                 String token = tokenPool.generateToken();
                 tokenPool.login(user.getUserId(), token);
-                log.info("Token issued to " + user.getUserId());
+                log.info(user.getUserLevel() == UserLevel.ADMIN ? "User:":"Admin:"
+                        + "Token issued to id = " + user.getUserId() + ", user name = " + user.getFirst_name()
+                        + ", Token = " + token
+            );
                 map.put("status", "success");
                 map.put("token", token);
             }
