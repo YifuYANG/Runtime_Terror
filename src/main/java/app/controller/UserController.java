@@ -1,5 +1,7 @@
 package app.controller;
 
+import app.annotation.access.RestrictUserAccess;
+import app.bean.TokenPool;
 import app.constant.UserLevel;
 import app.exception.UserNotFoundException;
 import app.model.User;
@@ -25,7 +27,10 @@ import java.util.regex.Pattern;
 public class UserController {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    @Autowired
+    private TokenPool tokenPool;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -107,38 +112,54 @@ public class UserController {
     }
 
     // Get All Users
+    @RestrictUserAccess(requiredLevel = UserLevel.ADMIN)
     @GetMapping("/Users")
-    public List<User> getAllUsers() throws ParseException {
+    public List<User> getAllUsers( @RequestHeader("token") String token) throws ParseException {
 //        userRepository.save(new User(1, "Tom", "Furlong", "1234", "t@emal",
 //               "irish", "07-APR-1999", 909, 065));
+        log.info("Admin ID = " + tokenPool.getUserIdByToken(token) + " queried all users information.");
         return userRepository.findAll();
     }
 
     // Get a Single User by ID
+    @RestrictUserAccess(requiredLevel = UserLevel.ADMIN)
     @GetMapping("/users/{id}")
-    public User getBookById(@PathVariable(value = "id") Long bookId) throws UserNotFoundException {
+    public User getBookById(
+            @RequestHeader("token") String token,
+            @PathVariable(value = "id") Long bookId
+    ) throws UserNotFoundException {
+        log.info("Admin ID = " + tokenPool.getUserIdByToken(token) + " queried a book with ID = " + bookId);
         return userRepository.findById(bookId)
                 .orElseThrow(() -> new UserNotFoundException(bookId));
     }
 
     // Update an Existing User
     @PutMapping("/users/{id}")
-    public User updateBook(@PathVariable(value="id") Long userId, @Valid @RequestBody User userDetails)
-            throws UserNotFoundException {
+    @RestrictUserAccess(requiredLevel = UserLevel.ADMIN)
+    public User updateBook(
+            @RequestHeader("token") String token,
+            @PathVariable(value="id") Long userId,
+            @Valid @RequestBody User userDetails
+    ) throws UserNotFoundException {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
         user.setEmail(userDetails.getEmail());
         user.setPhone_number(userDetails.getPhone_number());
         User updatedBook = userRepository.save(user);
-
+        log.info("Admin ID = " + tokenPool.getUserIdByToken(token) + " updated an user account with ID = " + userId);
         return updatedBook;
     }
 
     // Delete a Book
     //only admins should be able to do this action
+    @RestrictUserAccess(requiredLevel = UserLevel.ADMIN)
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<?> deleteBook(@PathVariable(value="id") Long userId) throws UserNotFoundException {
+    public ResponseEntity<?> deleteBook(
+            @RequestHeader("token") String token,
+            @PathVariable(value="id") Long userId) throws UserNotFoundException {
+        log.info("Admin ID = " + tokenPool.getUserIdByToken(token)
+                + " deleted an user with ID = " + userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
         userRepository.delete(user);

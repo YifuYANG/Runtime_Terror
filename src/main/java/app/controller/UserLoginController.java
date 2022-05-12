@@ -70,8 +70,9 @@ public class UserLoginController {
                 map.put("token", token);
             }
         } else {
+            log.warn("User account = " + loginForm.getUserEmail() + " is suspended for multiple failed authentication.");
             map.put("status", "fail");
-            map.put("msg", "Too many request, you can try again after one minue");
+            map.put("msg", "Too many requests, you can try again after one minute");
         }
         return map;
     }

@@ -6,6 +6,7 @@ import app.constant.*;
 import app.dao.AppointmentDao;
 import app.model.Appointment;
 import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Controller
+@Slf4j
 public class IndexController {
 
     @Value("classpath:vega-lite/brand-popularity.json")
@@ -113,7 +115,7 @@ public class IndexController {
 
         /** Initial validation checks for second appointment*/
         if(appointmentDao.findByUserId(tokenPool.getUserIdByToken(token))==null){
-            System.out.println("Must book first appointment");
+            log.warn("User ID = " + tokenPool.getUserIdByToken(token) + ": Must book first appointment");
             return "You must book your first appointment before your second " +
                     "appointment. Please book your first appointment";
         }
@@ -185,6 +187,7 @@ public class IndexController {
         appointment.setDose_2_status(DoseStatus.PENDING);
         System.out.println(appointment);
         appointmentDao.save(appointment);
+        log.info("User ID = " + tokenPool.getUserIdByToken(token) + ": booked 2nd appointment successfully.");
         return "Thank you for booking your second appointment";
     }
 

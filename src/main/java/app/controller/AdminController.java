@@ -1,6 +1,7 @@
 package app.controller;
 
 import app.annotation.access.RestrictUserAccess;
+import app.bean.TokenPool;
 import app.constant.UserLevel;
 import app.dao.AppointmentDao;
 import app.vo.AdminAppointment;
@@ -19,11 +20,15 @@ import java.util.List;
 public class AdminController {
 
     @Autowired
-    AppointmentDao appointmentDao;
+    private AppointmentDao appointmentDao;
+
+    @Autowired
+    private TokenPool tokenPool;
 
     @RestrictUserAccess(requiredLevel = UserLevel.ADMIN)
     @GetMapping
     public String adminPage(@RequestHeader("token") String token, Model model) {
+        log.info("Admin page accessed, operator ID = " + tokenPool.getUserIdByToken(token));
         List<AdminAppointment> appointments = appointmentDao.findAllPendingAppointments();
         model.addAttribute("appointments_number", appointments.size());
         model.addAttribute("appointments", appointments);
@@ -37,11 +42,11 @@ public class AdminController {
         if(!appointmentDao.existsById(form.getAppointmentId())) return "Invalid appointment id.";
         Long id = form.getAppointmentId();
         if(form.getDoseNumber() == 1) {
-            log.info("Update: appointment id = " + id);
+            log.info("Update: appointment id = " + id + ", operator ID = " + tokenPool.getUserIdByToken(token));
             appointmentDao.updateDose1(id);
         }
         else if(form.getDoseNumber() == 2) {
-            log.info("Update: appointment id = " + id);
+            log.info("Update: appointment id = " + id + ", operator ID = " + tokenPool.getUserIdByToken(token));
             appointmentDao.updateDose2(id);
         }
         else {

@@ -43,6 +43,7 @@ public class ActivityController {
             activities = activityDao.findAllActivities();
         model.addAttribute("user", userName);
         model.addAttribute("activities", activities);
+        log.info("Activity page accessed, operator ID = " + tokenPool.getUserIdByToken(token));
         return "activity";
     }
 
