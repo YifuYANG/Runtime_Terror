@@ -47,14 +47,6 @@ public class UserLoginController {
         Map<String, Object> map = new HashMap<>(3);
         User user = userRepository.findByUserEmail(loginForm.getUserEmail());
 
-        try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            System.out.println(inetAddress);
-            System.out.println(inetAddress.getHostAddress());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-
 
         if(user == null){
             map.put("status", "fail");
