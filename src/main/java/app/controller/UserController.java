@@ -70,10 +70,16 @@ public class UserController {
             return "redirect:/register?passwordError";
         }
         if(userRoleValidator(newUser.getUserLevel().toString())){
+            /**
+            I am not sure if I did correctly, I am validating data at back side so attacker wouldn't register admin account using burp
+             */
             return "redirect:/register?registrationError";
         }
 
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        /**
+         PPS, data of birth, and phone number should be encoded before storing in to DB
+         */
         userRepository.save(newUser);
         return "redirect:/register?success";
     }
