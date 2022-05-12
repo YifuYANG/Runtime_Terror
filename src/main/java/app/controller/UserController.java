@@ -7,6 +7,7 @@ import app.exception.UserNotFoundException;
 import app.model.User;
 import app.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.jasypt.util.numeric.StrongIntegerNumberEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.jasypt.util.text.StrongTextEncryptor;
 
 import javax.validation.Valid;
+import java.math.BigInteger;
 import java.text.ParseException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.List;
@@ -38,6 +40,9 @@ public class UserController {
 
     @Autowired
     private StrongTextEncryptor ppsnEncoder;
+
+    @Autowired
+    private StrongIntegerNumberEncryptor phoneNumberEncoder;
 
     @ModelAttribute("user")
     public User user() {
@@ -85,7 +90,11 @@ public class UserController {
          PPS, data of birth, and phone number should be encoded before storing in to DB
          */
         newUser.setPPS_number(ppsnEncoder.encrypt((newUser.getPPS_number())));
-        System.out.println(ppsnEncoder.decrypt(newUser.getPPS_number()));
+        BigInteger bigPhoneNumber = BigInteger.valueOf(newUser.getPhone_number());
+        long phoneNum = phoneNumberEncoder.encrypt(bigPhoneNumber).longValue();
+        newUser.setPhone_number(phoneNum);
+        /** To decrypt use the decrypt() method that jasypt provides */
+
         userRepository.save(newUser);
         return "redirect:/register?success";
     }

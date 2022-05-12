@@ -11,9 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -42,4 +39,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return ppsnEncrypt;
     }
 
+    @Bean
+    public StrongIntegerNumberEncryptor phoneNumberEncoder() {
+        StrongIntegerNumberEncryptor phoneNumberEncrypt = new StrongIntegerNumberEncryptor();
+        phoneNumberEncrypt.setPassword("MyPhoneNumberEncryption");
+        return phoneNumberEncrypt;
+    }
 }
