@@ -74,6 +74,9 @@ public class UserController {
         }
 
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        /**
+         PPS, data of birth, and phone number should be encoded before storing in to DB
+         */
         userRepository.save(newUser);
         return "redirect:/register?success";
     }
