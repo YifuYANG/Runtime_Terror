@@ -20,6 +20,9 @@ import javax.validation.Valid;
 import java.math.BigInteger;
 import java.text.ParseException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,7 +73,7 @@ public class UserController {
             return "redirect:/register?ppsnError";
         }
 
-        if(userRepository.findByPPS(newUser.getPPS_number())!=null) {
+        if(findByPPSN(newUser.getPPS_number())) {
             return "redirect:/register?ppsnExistError";
         }
 
@@ -145,6 +148,21 @@ public class UserController {
         return matcher.matches();
     }
 
+    private List<String> findAllPPSN(){
+        return userRepository.findAllPPS();
+    }
+
+    private Boolean findByPPSN(String ppsNumber) {
+        List<String> ppsn_list = findAllPPSN();
+        Collections.reverse(ppsn_list);
+        for (String ppsn:ppsn_list){
+            if (ppsnEncoder.decrypt(ppsn).equals(ppsNumber)){
+                return true;
+            }
+        }
+
+        return false;
+    }
     // Get All Users
     @RestrictUserAccess(requiredLevel = UserLevel.ADMIN)
     @GetMapping("/Users")

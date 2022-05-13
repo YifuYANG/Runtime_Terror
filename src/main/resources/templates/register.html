@@ -67,6 +67,11 @@
                                           PPS number must be in the right format.
                                    </div>
                             </div>
+                            <div th:if="${param.ppsnExistError}">
+                                   <div class="alert alert-info">
+                                          This PPS number is already registered.
+                                   </div>
+                            </div>
 
                             <h1>Registration</h1>
                             <form name="form" th:action="@{/register}" th:object="${user}" method="POST">
@@ -190,8 +195,8 @@
        </div>
 
        <script type="text/javascript" th:src="@{/webjars/jquery/3.2.1/jquery.min.js/}"></script>
-       <script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
-
+       <!-- <script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script> -->
+       <br>
 </body>
 
 </html>

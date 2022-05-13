@@ -16,7 +16,7 @@ public class User {
     private Long userId;
 
     @NotBlank
-    private String first_name, last_name, password, email, nationality, PPS_number;
+    private String first_name, last_name, password, email, nationality, pps_number;
     private LocalDate date_of_birth;
     private long phone_number;
     private UserLevel userLevel;
@@ -38,7 +38,7 @@ public class User {
         this.email = email_address;
         this.nationality = nationality;
         setDate_of_birth(date_of_birth);
-        this.PPS_number = PPS_number;
+        this.pps_number = pps_number;
         this.phone_number = phone_number;
         this.userLevel = userLevel;
         this.accountLocked = accountNonLocked;
@@ -138,11 +138,11 @@ public class User {
     }
 
     public String getPPS_number() {
-        return PPS_number;
+        return pps_number;
     }
 
-    public void setPPS_number(String PPS_number) {
-        this.PPS_number = PPS_number;
+    public void setPPS_number(String pps_number) {
+        this.pps_number = pps_number;
     }
 
     public long getPhone_number() {
