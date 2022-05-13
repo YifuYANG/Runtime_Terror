@@ -69,6 +69,11 @@ public class UserController {
         if(!ppsValidator(newUser.getPPS_number())){
             return "redirect:/register?ppsnError";
         }
+
+        if(userRepository.findByPPS(newUser.getPPS_number())!=null) {
+            return "redirect:/register?ppsnExistError";
+        }
+
         if(!emailValidator(newUser.getEmail())){
             return "redirect:/register?invalidEmail";
         }
