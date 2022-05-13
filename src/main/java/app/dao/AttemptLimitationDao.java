@@ -1,7 +1,7 @@
 package app.dao;
 
-import app.model.User;
-import app.repository.UserRepository;
+import app.model.Ip_logs;
+import app.repository.IpAddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,50 +14,52 @@ public class AttemptLimitationDao {
     private static final long LOCK_DURATION = 20 * 60 * 1000; // 20 mines
 
     @Autowired
-    private UserRepository userRepository;
+    private IpAddressRepository ipAddressRepository;
 
-    public void increaseFailedAttempts(User user) {
-        int failAttempts = user.getFailedAttempts() + 1;
-        user.setFailedAttempts(failAttempts);
-        userRepository.save(user);
+
+    public void increaseFailedAttempts(Ip_logs ip_logs){
+        if(ipAddressRepository.findByIpAddress(ip_logs.getIp())!=null){
+            int failAttempts = ip_logs.getFailedAttempts() + 1;
+            ip_logs.setFailedAttempts(failAttempts);
+        }
     }
 
-    public void resetFailedAttempts(User user) {
-        user.setFailedAttempts(0);
-        userRepository.save(user);
+    public void resetFailedAttempts(Ip_logs ip_logs) {
+        ip_logs.setFailedAttempts(0);
+        ipAddressRepository.save(ip_logs);
     }
 
-    public void setLastAttempt(User user){
-        user.setLast_attempt(new Date());
-        userRepository.save(user);
+    public void setLastAttempt(Ip_logs ip_logs){
+        ip_logs.setLast_attempt(new Date());
+        ipAddressRepository.save(ip_logs);
     }
-    public void lock(User user) {
-        user.setAccountLocked(true);
-        user.setLock_time(new Date());
-        userRepository.save(user);
+    public void lock(Ip_logs ip_logs) {
+        ip_logs.setAccountLocked(true);
+        ip_logs.setLock_time(new Date());
+        ipAddressRepository.save(ip_logs);
     }
 
-    public void resetAttemptsAfterPeriodOfTime(User user){
-        if (user.getLast_attempt() != null) {
-            long lastAttemptTimeInMillis = user.getLast_attempt().getTime();
+    public void resetAttemptsAfterPeriodOfTime(Ip_logs ip_logs){
+        if (ip_logs.getLast_attempt() != null) {
+            long lastAttemptTimeInMillis = ip_logs.getLast_attempt().getTime();
             long currentTimeInMillis = System.currentTimeMillis();
             if (lastAttemptTimeInMillis + LOCK_DURATION < currentTimeInMillis) {
-                user.setFailedAttempts(0);
-                userRepository.save(user);
+                ip_logs.setFailedAttempts(0);
+                ipAddressRepository.save(ip_logs);
             }
         }
     }
-    public boolean unlockWhenTimeExpired(User user) {
-        if (user.getLock_time() == null) {
+    public boolean unlockWhenTimeExpired(Ip_logs ip_logs) {
+        if (ip_logs.getLock_time() == null) {
             return true;
         } else {
-            long lockTimeInMillis = user.getLock_time().getTime();
+            long lockTimeInMillis = ip_logs.getLock_time().getTime();
             long currentTimeInMillis = System.currentTimeMillis();
             if (lockTimeInMillis + LOCK_DURATION < currentTimeInMillis) {
-                user.setAccountLocked(false);
-                user.setLock_time(null);
-                user.setFailedAttempts(0);
-                userRepository.save(user);
+                ip_logs.setAccountLocked(false);
+                ip_logs.setLock_time(null);
+                ip_logs.setFailedAttempts(0);
+                ipAddressRepository.save(ip_logs);
                 return true;
             } else {
                 return false;
