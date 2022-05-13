@@ -1,6 +1,5 @@
 package app.dao;
 
-import app.bean.TokenPool;
 import app.model.ForumPost;
 import app.repository.ForumPostRepository;
 import app.repository.UserRepository;
