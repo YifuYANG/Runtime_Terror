@@ -2,24 +2,11 @@ function indexLoading() {
     if(isLoggedIn()) {
         document.getElementById("loginButton").style.display = "none"
         document.getElementById("activityButton").style.display = "inline"
-        document.getElementById("adminButton").style.display = "inline"
     }
     else {
         document.getElementById("loginButton").style.display = "inline"
         document.getElementById("activityButton").style.display = "none"
-        document.getElementById("adminButton").style.display = "none"
     }
-}
-
-function iAmAdmin() {
-    if(!isLoggedIn()) alert("Please login first!")
-    let xhr = new XMLHttpRequest()
-    xhr.open("GET", "/admin", false)
-    xhr.setRequestHeader("token", getToken())
-    xhr.onload = function () {
-        document.body.innerHTML = this.responseText
-    }
-    xhr.send()
 }
 
 function allActivities(){

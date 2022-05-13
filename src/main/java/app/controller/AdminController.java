@@ -26,8 +26,8 @@ public class AdminController {
     private TokenPool tokenPool;
 
     @RestrictUserAccess(requiredLevel = UserLevel.ADMIN)
-    @GetMapping
-    public String adminPage(@RequestHeader("token") String token, Model model) {
+    @GetMapping("/{token}")
+    public String adminPage(@PathVariable("token") String token, Model model) {
         log.info("Admin page accessed, operator ID = " + tokenPool.getUserIdByToken(token));
         List<AdminAppointment> appointments = appointmentDao.findAllPendingAppointments();
         model.addAttribute("appointments_number", appointments.size());

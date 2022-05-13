@@ -1,27 +1,17 @@
 package app.controller;
 
 import app.bean.TokenPool;
+import app.constant.UserLevel;
 import app.dao.AttemptLimitationDao;
 import app.model.User;
 import app.repository.UserRepository;
 import app.vo.LoginForm;
-import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Bucket4j;
-import io.github.bucket4j.Refill;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.time.Duration;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -46,8 +36,6 @@ public class UserLoginController {
     public Map<String, Object> login(@RequestBody LoginForm loginForm) {
         Map<String, Object> map = new HashMap<>(3);
         User user = userRepository.findByUserEmail(loginForm.getUserEmail());
-
-
         if(user == null){
             map.put("status", "fail");
             map.put("msg", "Account does not exist.");
@@ -78,6 +66,7 @@ public class UserLoginController {
                 attemptLimitationDao.resetFailedAttempts(user);
                 map.put("status", "success");
                 map.put("token", token);
+                map.put("role", getUserRoleByToken(token).name());
             }
         }
         return map;
@@ -114,5 +103,10 @@ public class UserLoginController {
 
     private Boolean passwordValidator(String password){
         return true;
+    }
+
+    private UserLevel getUserRoleByToken(String token) {
+        Long userId = tokenPool.getUserIdByToken(token);
+        return userRepository.findById(userId).get().getUserLevel();
     }
 }

@@ -14,7 +14,12 @@ function Login(){
                     var result = JSON.parse(xhr.responseText);
                     if (result.status === 'success') {
                         sessionStorage.setItem("token", JSON.stringify(result.token));
-                        window.location.href = "/"
+                        if(result.role !== 'ADMIN')
+                            window.location.href = "/"
+                        else {
+                            let adminHref = "/admin/" + getToken()
+                            window.location.href = adminHref
+                        }
                     } else {
                         alert(result.msg);
                     }
@@ -27,6 +32,22 @@ function Login(){
     }
 
 
+}
+
+function getToken() {
+    return JSON.parse(sessionStorage.getItem("token"))
+}
+
+function iAmAdmin() {
+    let xhr = new XMLHttpRequest()
+    xhr.open("GET", "/admin", false)
+    xhr.setRequestHeader("token", getToken())
+    xhr.onload = function () {
+        let newTab = window.open('/');
+        newTab.focus();
+        newTab.document.body.innerHTML = this.responseText;
+    }
+    xhr.send()
 }
 
 function Redirect(){
