@@ -83,7 +83,7 @@ public class UserController {
         if (result.hasErrors() || !emailValidator(newUser.getEmail())){
             return "redirect:/register?tryAgain";
         }
-        if(!passwordValidator(newUser.getPassword())){
+        if(!passwordValidator(newUser.getPassword()) && newUser.getPassword().length()<8){
             return "redirect:/register?passwordError";
         }
         if(userRoleValidator(newUser.getUserLevel().toString())){
