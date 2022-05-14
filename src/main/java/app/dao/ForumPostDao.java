@@ -22,6 +22,14 @@ public class ForumPostDao {
     @Autowired
     private UserRepository userDao;
 
+    public boolean checkCoolDown(Long userId) {
+        List<ForumPost> results = forumPostRepository.findAllByUserId(userId);
+        if(results.size() == 0) return true;
+        ForumPost result = results.get(0);
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        return getTimeDiff(result.getDateCreated(), now) > 60;
+    }
+
     public ForumPost save(Long userId, String content) {
         ForumPost forumPost = new ForumPost();
         forumPost.setUserId(userId);
@@ -40,6 +48,10 @@ public class ForumPostDao {
             results.add(vo);
         }
         return results;
+    }
+
+    private int getTimeDiff(Timestamp time1, Timestamp now) {
+        return (int)(now.getTime() - time1.getTime()) / 1000;
     }
 
 }

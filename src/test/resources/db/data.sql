@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS appointments;
+
 CREATE TABLE appointments (
                                  user_id BIGINT,
                                  appointment_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
