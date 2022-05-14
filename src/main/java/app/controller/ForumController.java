@@ -35,7 +35,10 @@ public class ForumController {
     public String createPost(@RequestHeader("token") String token,
                              @RequestBody Map<String, String> data) {
         Long userId = tokenPool.getUserIdByToken(token);
-        if(!forumPostDao.checkCoolDown(userId)) return "You just posted a question less than 1 minute ago.";
+        if(!forumPostDao.checkCoolDown(userId)) {
+            log.warn("User ID = " + userId + " attempted to post question during cool down");
+            return "You just posted a question less than 1 minute ago.";
+        }
         String content = data.get("content");
         forumPostDao.save(userId, content);
         log.info("User ID = " + userId + " created new post: " + content);
