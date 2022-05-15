@@ -74,7 +74,7 @@
                             </div>
                             <div th:if="${param.phoneNumberError}">
                                    <div class="alert alert-info">
-                                          Phone number must be 10 digits.
+                                          Phone number must be 10 digits and begin with 08.
                                    </div>
                             </div>
                             <div th:if="${param.usernameError}">
@@ -87,7 +87,7 @@
                                           Please enter valid country name.
                                    </div>
                             </div>
-                            <div th:if="${param.dobyError}">
+                            <div th:if="${param.dobError}">
                                    <div class="alert alert-info">
                                           Please try again.
                                    </div>
@@ -141,7 +141,8 @@
                                           th:classappend="${#fields.hasErrors('phone_number')}? 'has-error':''">
                                           <label for="phone_number" class="control-label">Phone Number</label>
                                           <input id="phone_number" class="form-control" th:field="*{phone_number}" 
-                                          minlength="10" maxlength="10" placeholder="0831234567" required title="Phone number must be 10 digits and begin with 08"/>
+                                          minlength="10" maxlength="10" placeholder="0831234567" pattern="^(08)[0-9]{8}$"
+                                          required title="Phone number must be 10 digits and begin with 08"/>
                                           <p class="error-message" th:each="error : ${#fields.errors('phone_number')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>

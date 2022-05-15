@@ -145,7 +145,7 @@ public class UserController {
     }
 
     private Boolean ppsValidator(String ppsNumber){
-        /** Six Digits then two letters for PPSN*/
+        /** Seven Digits then one letters for PPSN*/
         String regex = "\\d{7}[a-zA-Z]{1}";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(ppsNumber);
@@ -153,18 +153,14 @@ public class UserController {
     }
 
     private Boolean phoneValidator(long phoneNumber){
-        String regex = "^[0-9]{10}$";
+        String regex = "^(8)[0-9]{8}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(String.valueOf(phoneNumber));
-        System.out.println(phoneNumber);
         return matcher.matches();
     }
 
     private Boolean dobValidator(String dob){
-        String regex = "\"^((2000|2400|2800|(19|2[0-9](0[48]|[2468][048]|[13579][26])))-02-29)$\" \n" +
-                "      + \"|^(((19|2[0-9])[0-9]{2})-02-(0[1-9]|1[0-9]|2[0-8]))$\"\n" +
-                "      + \"|^(((19|2[0-9])[0-9]{2})-(0[13578]|10|12)-(0[1-9]|[12][0-9]|3[01]))$\" \n" +
-                "      + \"|^(((19|2[0-9])[0-9]{2})-(0[469]|11)-(0[1-9]|[12][0-9]|30))$\"";
+        String regex = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(String.valueOf(dob));
         return matcher.matches();
