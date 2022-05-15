@@ -5,7 +5,7 @@ import app.annotation.access.RestrictUserAccess;
 import app.bean.TokenPool;
 import app.constant.UserLevel;
 import app.dao.ActivityDao;
-import app.exception.AuthenticationException;
+import app.exception.CustomErrorException;
 import app.repository.UserRepository;
 import app.vo.ActivityForm;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class ActivityController {
 
     @RestrictUserAccess(requiredLevel = UserLevel.ANY)
     @GetMapping
-    public String activityPage(@RequestHeader("token") String token, Model model) throws AuthenticationException {
+    public String activityPage(@RequestHeader("token") String token, Model model) throws CustomErrorException {
         try {
             Long userid = tokenPool.getUserIdByToken(token);
             String userName = userRepository.findByUserId(userid).getFirst_name();
@@ -48,15 +48,15 @@ public class ActivityController {
             log.info("Activity page accessed, operator ID = " + tokenPool.getUserIdByToken(token));
             return "activity";
         } catch (Exception e){
-            throw new AuthenticationException("some error happened");
+            throw new CustomErrorException("some error happened");
         }
     }
 
-    private boolean userIsAdmin(Long userId) throws AuthenticationException {
+    private boolean userIsAdmin(Long userId) throws CustomErrorException {
         try {
             return userRepository.findById(userId).get().getUserLevel() == UserLevel.ADMIN;
         } catch (Exception e){
-            throw new AuthenticationException("some error happened");
+            throw new CustomErrorException("some error happened");
         }
     }
 

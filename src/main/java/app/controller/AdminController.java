@@ -4,7 +4,7 @@ import app.annotation.access.RestrictUserAccess;
 import app.bean.TokenPool;
 import app.constant.UserLevel;
 import app.dao.AppointmentDao;
-import app.exception.AuthenticationException;
+import app.exception.CustomErrorException;
 import app.vo.AdminAppointment;
 import app.vo.UpdateForm;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class AdminController {
 
     @RestrictUserAccess(requiredLevel = UserLevel.ADMIN)
     @GetMapping
-    public String adminPage(@RequestHeader("token") String token, Model model) throws AuthenticationException {
+    public String adminPage(@RequestHeader("token") String token, Model model) throws CustomErrorException {
         try {
             log.info("Admin page accessed, operator ID = " + tokenPool.getUserIdByToken(token));
             List<AdminAppointment> appointments = appointmentDao.findAllPendingAppointments();
@@ -36,14 +36,14 @@ public class AdminController {
             model.addAttribute("appointments", appointments);
             return "admin";
         } catch (Exception e){
-            throw new AuthenticationException("some error happened");
+            throw new CustomErrorException("some error happened");
         }
     }
 
     @RestrictUserAccess(requiredLevel = UserLevel.ADMIN)
     @PostMapping("/update-appointment")
     @ResponseBody
-    public String updateAppointment(@RequestHeader("token") String token, @RequestBody UpdateForm form) throws AuthenticationException {
+    public String updateAppointment(@RequestHeader("token") String token, @RequestBody UpdateForm form) throws CustomErrorException {
         try {
             if(!appointmentDao.existsById(form.getAppointmentId())) return "Invalid appointment id.";
             Long id = form.getAppointmentId();
@@ -61,7 +61,7 @@ public class AdminController {
             }
             return "Approved.";
         } catch (Exception e){
-            throw new AuthenticationException("some error happened");
+            throw new CustomErrorException("some error happened");
         }
     }
 

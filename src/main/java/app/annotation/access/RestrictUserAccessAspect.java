@@ -2,7 +2,7 @@ package app.annotation.access;
 
 import app.bean.TokenPool;
 import app.constant.UserLevel;
-import app.exception.AuthenticationException;
+import app.exception.CustomErrorException;
 import app.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -41,18 +41,18 @@ public class RestrictUserAccessAspect {
             token = token.replaceAll("\"", "");
             if(token == null || token.length() == 0) {
                 log.warn("Absent token detected");
-                throw new AuthenticationException("Access denied, please login first.");
+                throw new CustomErrorException("Access denied, please login first.");
             }
             if(!tokenPool.containsToken(token)) {
                 log.warn("Invalid token detected -> " + token);
-                throw new AuthenticationException("Access denied, invalid token >> " + token);
+                throw new CustomErrorException("Access denied, invalid token >> " + token);
             }
             //If token is valid, we need to check whether user level satisfies required level
             Long userId = tokenPool.getUserIdByToken(token);
             //Then check if the token is expired
             if(!tokenPool.validateTokenExpiry(token, LocalDateTime.now())) {
                 log.warn("Expired token detected -> " + token);
-                throw new AuthenticationException("Access denied, your token has been expired, please re-login.");
+                throw new CustomErrorException("Access denied, your token has been expired, please re-login.");
             }
             if(requiredLevel == UserLevel.ANY) {
                 log.info("Token approved to execute " + method.getName());
@@ -60,7 +60,7 @@ public class RestrictUserAccessAspect {
             }
             else if(userRepository.findById(userId).get().getUserLevel() != requiredLevel) {
                 log.warn("Insufficient authorisation detected -> " + token);
-                throw new AuthenticationException("Access denied, you have no privileges to access this content.");
+                throw new CustomErrorException("Access denied, you have no privileges to access this content.");
             }
             log.info("Token approved to execute " + method.getName());
             return joinPoint.proceed();

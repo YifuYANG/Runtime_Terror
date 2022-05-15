@@ -3,7 +3,7 @@ package app.controller;
 import app.bean.TokenPool;
 import app.constant.UserLevel;
 import app.dao.AttemptLimitationDao;
-import app.exception.AuthenticationException;
+import app.exception.CustomErrorException;
 import app.model.Ip_logs;
 import app.model.User;
 import app.repository.IpAddressRepository;
@@ -39,7 +39,7 @@ public class UserLoginController {
     //adding encoder method
     @PostMapping("/login")
     @ResponseBody
-    public Map<String, Object> login(@RequestBody LoginForm loginForm, HttpServletRequest request) throws AuthenticationException {
+    public Map<String, Object> login(@RequestBody LoginForm loginForm, HttpServletRequest request) throws CustomErrorException {
 
         try {
             Map<String, Object> map = new HashMap<>(3);
@@ -88,7 +88,7 @@ public class UserLoginController {
             }
             return map;
         } catch (Exception e){
-            throw new AuthenticationException("some error happened");
+            throw new CustomErrorException("some error happened");
         }
     }
 

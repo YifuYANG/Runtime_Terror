@@ -4,7 +4,7 @@ import app.annotation.access.RestrictUserAccess;
 import app.bean.TokenPool;
 import app.constant.*;
 import app.dao.AppointmentDao;
-import app.exception.AuthenticationException;
+import app.exception.CustomErrorException;
 import app.model.Appointment;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Date;
 import java.text.ParseException;
@@ -47,7 +46,7 @@ public class IndexController {
     @RestrictUserAccess(requiredLevel = UserLevel.CLIENT)
     @PostMapping("/create-appointment")
     @ResponseBody
-    public String book(@RequestHeader("token") String token, @RequestBody Map<String, Object> form) throws ParseException, AuthenticationException {
+    public String book(@RequestHeader("token") String token, @RequestBody Map<String, Object> form) throws ParseException, CustomErrorException {
         try {
             Appointment appointment = new Appointment();
 
@@ -107,7 +106,7 @@ public class IndexController {
             appointmentDao.save(appointment);
             return "Thank you for booking your first appointment";
         } catch (Exception e){
-            throw new AuthenticationException("some error happened");
+            throw new CustomErrorException("some error happened");
         }
 
     }
@@ -115,7 +114,7 @@ public class IndexController {
     @RestrictUserAccess(requiredLevel = UserLevel.CLIENT)
     @PostMapping("/create-second-appointment")
     @ResponseBody
-    public String bookSecondAppointment(@RequestHeader("token") String token, @RequestBody Map<String, Object> form) throws ParseException, AuthenticationException {
+    public String bookSecondAppointment(@RequestHeader("token") String token, @RequestBody Map<String, Object> form) throws ParseException, CustomErrorException {
 
         try {
             /** Initial validation checks for second appointment*/
@@ -195,14 +194,14 @@ public class IndexController {
             log.info("User ID = " + tokenPool.getUserIdByToken(token) + ": booked 2nd appointment successfully.");
             return "Thank you for booking your second appointment";
         } catch (Exception e){
-            throw new AuthenticationException("some error happened");
+            throw new CustomErrorException("some error happened");
         }
 
     }
 
     @GetMapping("/vis/dose-popularity")
     @ResponseBody
-    public String visualizeDosePopularity() throws AuthenticationException {
+    public String visualizeDosePopularity() throws CustomErrorException {
         try {
             Gson gson = new Gson();
             String content = Files.readString(dosePopularityFile.getFile().toPath());
@@ -214,7 +213,7 @@ public class IndexController {
             }
             return gson.toJson(object);
         } catch (Exception e){
-            throw new AuthenticationException("some error happened");
+            throw new CustomErrorException("some error happened");
         }
     }
 

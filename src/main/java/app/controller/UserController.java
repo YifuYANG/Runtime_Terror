@@ -4,7 +4,7 @@ import app.annotation.access.RestrictUserAccess;
 import app.bean.CommonStringPool;
 import app.bean.TokenPool;
 import app.constant.UserLevel;
-import app.exception.AuthenticationException;
+import app.exception.CustomErrorException;
 import app.exception.UserNotFoundException;
 import app.model.User;
 import app.repository.UserRepository;
@@ -66,7 +66,7 @@ public class UserController {
     }
     // Create a new User
     @PostMapping
-    public String RegisterUser(@ModelAttribute("newUser") User newUser, BindingResult result) throws AuthenticationException {
+    public String RegisterUser(@ModelAttribute("newUser") User newUser, BindingResult result) throws CustomErrorException {
         try {
             newUser.setUserLevel(UserLevel.CLIENT);
 
@@ -122,7 +122,7 @@ public class UserController {
             userRepository.save(newUser);
             return "redirect:/register?success";
         } catch (Exception e){
-            throw new AuthenticationException("some error happened");
+            throw new CustomErrorException("some error happened");
         }
 
     }

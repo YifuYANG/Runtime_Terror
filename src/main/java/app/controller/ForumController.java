@@ -4,7 +4,7 @@ import app.annotation.access.RestrictUserAccess;
 import app.bean.TokenPool;
 import app.constant.UserLevel;
 import app.dao.ForumPostDao;
-import app.exception.AuthenticationException;
+import app.exception.CustomErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,12 +25,12 @@ public class ForumController {
     private ForumPostDao forumPostDao;
 
     @GetMapping
-    public String forumPage(Model model) throws AuthenticationException {
+    public String forumPage(Model model) throws CustomErrorException {
         try {
             model.addAttribute("posts", forumPostDao.findAllToVO());
             return "forum";
         }catch (Exception e){
-            throw new AuthenticationException("some error happened");
+            throw new CustomErrorException("some error happened");
         }
     }
 
@@ -38,7 +38,7 @@ public class ForumController {
     @RestrictUserAccess(requiredLevel = UserLevel.ANY)
     @ResponseBody
     public String createPost(@RequestHeader("token") String token,
-                             @RequestBody Map<String, String> data) throws AuthenticationException {
+                             @RequestBody Map<String, String> data) throws CustomErrorException {
         try {
             Long userId = tokenPool.getUserIdByToken(token);
             if(!forumPostDao.checkCoolDown(userId)) {
@@ -50,7 +50,7 @@ public class ForumController {
             log.info("User ID = " + userId + " created new post: " + content);
             return "Your question has been submitted successfully!";
         } catch (Exception e){
-            throw new AuthenticationException("some error happened");
+            throw new CustomErrorException("some error happened");
         }
     }
 

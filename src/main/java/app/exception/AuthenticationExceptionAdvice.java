@@ -7,8 +7,8 @@ import org.springframework.web.servlet.ModelAndView;
 @ControllerAdvice
 public class AuthenticationExceptionAdvice {
 
-    @ExceptionHandler(value = AuthenticationException.class)
-    public ModelAndView exceptionHandler(AuthenticationException e){
+    @ExceptionHandler(value = CustomErrorException.class)
+    public ModelAndView exceptionHandler(CustomErrorException e){
         ModelAndView mv = new ModelAndView();
         mv.addObject("msg", e.getMessage());
         mv.setViewName("error");
