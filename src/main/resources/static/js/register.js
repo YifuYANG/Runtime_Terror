@@ -43,7 +43,7 @@ function checkEmail(){
 
 function checkPassword(){
     regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()])(?=\\S+$).{8, 20}$/;
-    if (info.password.match(validRegex)) {
+    if (info.password.match(regex)) {
         return true;
     } else {
         return false;

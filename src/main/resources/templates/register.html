@@ -77,6 +77,16 @@
                                           Phone number must be 10 digits.
                                    </div>
                             </div>
+                            <div th:if="${param.usernameError}">
+                                   <div class="alert alert-info">
+                                          Phone enter valid user name.
+                                   </div>
+                            </div>
+                            <div th:if="${param.nationalityError}">
+                                   <div class="alert alert-info">
+                                          Please enter valid country name.
+                                   </div>
+                            </div>
                             <h1>Registration</h1>
                             <form name="form" th:action="@{/register}" th:object="${user}" method="POST">
 

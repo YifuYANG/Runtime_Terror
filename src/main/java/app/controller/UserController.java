@@ -21,7 +21,6 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -68,6 +67,14 @@ public class UserController {
         if(existing != null){
             result.rejectValue("Email", null, "An account already exists for this email");
         }
+        if(!specialCharacterFilter(newUser.getFirst_name()) || !specialCharacterFilter(newUser.getLast_name())){
+            return "redirect:/register?usernameError";
+        }
+
+        if(!specialCharacterFilter(newUser.getNationality())){
+            return "redirect:/register?nationalityError";
+        }
+
         if(!ppsValidator(newUser.getPPS_number())){
             return "redirect:/register?ppsnError";
         }
@@ -80,18 +87,11 @@ public class UserController {
         if(result.hasErrors() || !emailValidator(newUser.getEmail())){
             return "redirect:/register?tryAgain";
         }
-        if(!passwordValidator(newUser.getPassword())){
+        if(!passwordValidator(newUser.getPassword()) && newUser.getPassword().length()<8){
             return "redirect:/register?passwordError";
         }
-        if(!phoneNumberValidator(newUser.getPhone_number())){
+        if(!phoneValidator(newUser.getPhone_number())) {
             return "redirect:/register?phoneNumberError";
-        }
-        if(userRoleValidator(newUser.getUserLevel().toString())){
-            System.out.println("here3");
-            /**
-            I am not sure if I did correctly, I am validating data at back side so attacker wouldn't register admin account using burp
-             */
-            return "redirect:/register?registrationError";
         }
 
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
@@ -144,9 +144,18 @@ public class UserController {
         return matcher.matches();
     }
 
-    private Boolean phoneNumberValidator(long phoneNumber){
-        int len = String.valueOf(phoneNumber).length();
-        return len == 10 || len == 9;
+    private Boolean phoneValidator(long phoneNumber){
+        String regex = "^[0-9]{10}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(String.valueOf(phoneNumber));
+        return matcher.matches();
+    }
+
+    private Boolean specialCharacterFilter(String username){
+        String regex = "^[^\\\\<>]*$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(username);
+        return matcher.matches();
     }
 
     private List<String> findAllPPSN(){
