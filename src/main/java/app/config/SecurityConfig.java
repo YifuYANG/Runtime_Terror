@@ -39,6 +39,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    public StrongTextEncryptor dobEncoder() {
+        StrongTextEncryptor dobEncrypt = new StrongTextEncryptor();
+        dobEncrypt.setPassword("MyDobEncryption");
+        return dobEncrypt;
+    }
+
+    @Bean
     public StrongIntegerNumberEncryptor phoneNumberEncoder() {
         StrongIntegerNumberEncryptor phoneNumberEncrypt = new StrongIntegerNumberEncryptor();
         phoneNumberEncrypt.setPassword("MyPhoneNumberEncryption");

@@ -44,6 +44,9 @@ public class UserController {
     private StrongTextEncryptor ppsnEncoder;
 
     @Autowired
+    private StrongTextEncryptor dobEncoder;
+
+    @Autowired
     private StrongIntegerNumberEncryptor phoneNumberEncoder;
 
     @ModelAttribute("user")
@@ -57,7 +60,7 @@ public class UserController {
     }
     // Create a new User
     @PostMapping
-    public String RegisterUser(@ModelAttribute("newUser") User newUser, BindingResult result) {
+    public String RegisterUser(@ModelAttribute("newUser") User newUser, BindingResult result) throws ParseException {
         newUser.setUserLevel(UserLevel.CLIENT);
 
         if(checkForEmpty(newUser)){
@@ -93,11 +96,16 @@ public class UserController {
         if(!phoneValidator(newUser.getPhone_number())) {
             return "redirect:/register?phoneNumberError";
         }
+        if(!dobValidator(newUser.getDate_of_birth())){
+            return "redirect:/register?dobError";
+        }
 
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         /**
          PPS, data of birth, and phone number should be encoded before storing in to DB
          */
+        String dob = String.valueOf(newUser.getDate_of_birth());
+        newUser.setDate_of_birth(dobEncoder.encrypt(dob));
         newUser.setPPS_number(ppsnEncoder.encrypt((newUser.getPPS_number())));
         BigInteger bigPhoneNumber = BigInteger.valueOf(newUser.getPhone_number());
         long phoneNum = phoneNumberEncoder.encrypt(bigPhoneNumber).longValue();
@@ -138,7 +146,7 @@ public class UserController {
 
     private Boolean ppsValidator(String ppsNumber){
         /** Six Digits then two letters for PPSN*/
-        String regex = "\\d{6}[a-zA-Z]{2}";
+        String regex = "\\d{7}[a-zA-Z]{1}";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(ppsNumber);
         return matcher.matches();
@@ -148,6 +156,17 @@ public class UserController {
         String regex = "^[0-9]{10}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(String.valueOf(phoneNumber));
+        System.out.println(phoneNumber);
+        return matcher.matches();
+    }
+
+    private Boolean dobValidator(String dob){
+        String regex = "\"^((2000|2400|2800|(19|2[0-9](0[48]|[2468][048]|[13579][26])))-02-29)$\" \n" +
+                "      + \"|^(((19|2[0-9])[0-9]{2})-02-(0[1-9]|1[0-9]|2[0-8]))$\"\n" +
+                "      + \"|^(((19|2[0-9])[0-9]{2})-(0[13578]|10|12)-(0[1-9]|[12][0-9]|3[01]))$\" \n" +
+                "      + \"|^(((19|2[0-9])[0-9]{2})-(0[469]|11)-(0[1-9]|[12][0-9]|30))$\"";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(String.valueOf(dob));
         return matcher.matches();
     }
 

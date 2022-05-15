@@ -87,6 +87,11 @@
                                           Please enter valid country name.
                                    </div>
                             </div>
+                            <div th:if="${param.dobyError}">
+                                   <div class="alert alert-info">
+                                          Please try again.
+                                   </div>
+                            </div>
                             <h1>Registration</h1>
                             <form name="form" th:action="@{/register}" th:object="${user}" method="POST">
 
@@ -127,8 +132,8 @@
                                           th:classappend="${#fields.hasErrors('PPS_number')}? 'has-error':''">
                                           <label for="PPS_number" class="control-label">PPS Number</label>
                                           <input id="PPS_number" minlength="8" maxlength="8" class="form-control"
-                                                 th:field="*{PPS_number}" placeholder="123456AB" required pattern="\d{6}[a-zA-Z]{2}"
-                                                 title="Follow the format of 6 digits and 2 letters at the end."/>
+                                                 th:field="*{PPS_number}" placeholder="1234567A" required pattern="\d{7}[a-zA-Z]{1}"
+                                                 title="Follow the format of 7 digits and 1 letters at the end."/>
                                           <p class="error-message" th:each="error : ${#fields.errors('PPS_number')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
@@ -136,7 +141,7 @@
                                           th:classappend="${#fields.hasErrors('phone_number')}? 'has-error':''">
                                           <label for="phone_number" class="control-label">Phone Number</label>
                                           <input id="phone_number" class="form-control" th:field="*{phone_number}" 
-                                          minlength="10" maxlength="10" required title="Phone number must be 10 digits"/>
+                                          minlength="10" maxlength="10" placeholder="0831234567" required title="Phone number must be 10 digits and begin with 08"/>
                                           <p class="error-message" th:each="error : ${#fields.errors('phone_number')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>

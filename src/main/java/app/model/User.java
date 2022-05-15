@@ -17,7 +17,7 @@ public class User {
 
     @NotBlank
     private String first_name, last_name, password, email, nationality, pps_number;
-    private LocalDate date_of_birth;
+    private String date_of_birth;
     private long phone_number;
     private UserLevel userLevel;
     private boolean accountLocked = false;
@@ -127,14 +127,12 @@ public class User {
         this.nationality = nationality;
     }
 
-    public LocalDate getDate_of_birth() {
+    public String getDate_of_birth() {
         return date_of_birth;
     }
 
-    public void setDate_of_birth(String date_of_birth) throws ParseException {
-        LocalDate date = LocalDate.parse(date_of_birth);
-        date = date.plusDays(1);
-        this.date_of_birth = date;
+    public void setDate_of_birth(String date_of_birth){
+        this.date_of_birth = date_of_birth;
     }
 
     public String getPPS_number() {
