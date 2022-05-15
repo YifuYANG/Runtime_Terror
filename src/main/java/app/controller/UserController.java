@@ -1,8 +1,10 @@
 package app.controller;
 
 import app.annotation.access.RestrictUserAccess;
+import app.bean.CommonStringPool;
 import app.bean.TokenPool;
 import app.constant.UserLevel;
+import app.exception.CustomErrorException;
 import app.exception.UserNotFoundException;
 import app.model.User;
 import app.repository.UserRepository;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.jasypt.util.text.StrongTextEncryptor;
 
 import javax.validation.Valid;
+import java.io.FileNotFoundException;
 import java.math.BigInteger;
 import java.text.ParseException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -49,71 +52,79 @@ public class UserController {
     @Autowired
     private StrongIntegerNumberEncryptor phoneNumberEncoder;
 
+    @Autowired
+    private CommonStringPool commonStringPool;
+
     @ModelAttribute("user")
     public User user() {
         return new User();
     }
 
     @GetMapping
-    public String showRegistrationForm(Model model) {
+    public String showRegistrationForm(Model model) throws FileNotFoundException {
         return "register";
     }
     // Create a new User
     @PostMapping
-    public String RegisterUser(@ModelAttribute("newUser") User newUser, BindingResult result) throws ParseException {
-        newUser.setUserLevel(UserLevel.CLIENT);
+    public String RegisterUser(@ModelAttribute("newUser") User newUser, BindingResult result) throws CustomErrorException {
+        try {
+            newUser.setUserLevel(UserLevel.CLIENT);
 
-        if(checkForEmpty(newUser)){
-            return "redirect:/register?empty";
-        }
-        User existing = userRepository.findByUserEmail(newUser.getEmail());
-        if(existing != null){
-            result.rejectValue("Email", null, "An account already exists for this email");
-        }
-        if(!specialCharacterFilter(newUser.getFirst_name()) || !specialCharacterFilter(newUser.getLast_name())){
-            return "redirect:/register?usernameError";
+            if(checkForEmpty(newUser)){
+                return "redirect:/register?empty";
+            }
+            User existing = userRepository.findByUserEmail(newUser.getEmail());
+            if(existing != null){
+                result.rejectValue("Email", null, "An account already exists for this email");
+            }
+            if(!specialCharacterFilter(newUser.getFirst_name()) || !specialCharacterFilter(newUser.getLast_name())){
+                return "redirect:/register?usernameError";
+            }
+
+            if(!specialCharacterFilter(newUser.getNationality())){
+                return "redirect:/register?nationalityError";
+            }
+
+            if(!ppsValidator(newUser.getPPS_number())){
+                return "redirect:/register?ppsnError";
+            }
+            if(findByPPSN(newUser.getPPS_number())) {
+                return "redirect:/register?ppsnExistError";
+            }
+            if(!emailValidator(newUser.getEmail())){
+                return "redirect:/register?invalidEmail";
+            }
+            if(result.hasErrors() || !emailValidator(newUser.getEmail())){
+                return "redirect:/register?tryAgain";
+            }
+            if(!passwordValidator(newUser.getPassword(),newUser.getLast_name(),newUser.getFirst_name())){
+                return "redirect:/register?passwordError";
+            }
+            if(!phoneValidator(newUser.getPhone_number())) {
+                return "redirect:/register?phoneNumberError";
+            }
+            if(!dobValidator(newUser.getDate_of_birth())){
+                return "redirect:/register?dobError";
+            }
+
+            newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+            /**
+             PPS, data of birth, and phone number should be encoded before storing in to DB
+             */
+            String dob = String.valueOf(newUser.getDate_of_birth());
+            newUser.setDate_of_birth(dobEncoder.encrypt(dob));
+            newUser.setPPS_number(ppsnEncoder.encrypt((newUser.getPPS_number())));
+            BigInteger bigPhoneNumber = BigInteger.valueOf(newUser.getPhone_number());
+            long phoneNum = phoneNumberEncoder.encrypt(bigPhoneNumber).longValue();
+            newUser.setPhone_number(phoneNum);
+            /** To decrypt use the decrypt() method that jasypt provides */
+
+            userRepository.save(newUser);
+            return "redirect:/register?success";
+        } catch (Exception e){
+            throw new CustomErrorException("some error happened");
         }
 
-        if(!specialCharacterFilter(newUser.getNationality())){
-            return "redirect:/register?nationalityError";
-        }
-
-        if(!ppsValidator(newUser.getPPS_number())){
-            return "redirect:/register?ppsnError";
-        }
-        if(findByPPSN(newUser.getPPS_number())) {
-            return "redirect:/register?ppsnExistError";
-        }
-        if(!emailValidator(newUser.getEmail())){
-            return "redirect:/register?invalidEmail";
-        }
-        if(result.hasErrors() || !emailValidator(newUser.getEmail())){
-            return "redirect:/register?tryAgain";
-        }
-        if(!passwordValidator(newUser.getPassword()) && newUser.getPassword().length()<8){
-            return "redirect:/register?passwordError";
-        }
-        if(!phoneValidator(newUser.getPhone_number())) {
-            return "redirect:/register?phoneNumberError";
-        }
-        if(!dobValidator(newUser.getDate_of_birth())){
-            return "redirect:/register?dobError";
-        }
-
-        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-        /**
-         PPS, data of birth, and phone number should be encoded before storing in to DB
-         */
-        String dob = String.valueOf(newUser.getDate_of_birth());
-        newUser.setDate_of_birth(dobEncoder.encrypt(dob));
-        newUser.setPPS_number(ppsnEncoder.encrypt((newUser.getPPS_number())));
-        BigInteger bigPhoneNumber = BigInteger.valueOf(newUser.getPhone_number());
-        long phoneNum = phoneNumberEncoder.encrypt(bigPhoneNumber).longValue();
-        newUser.setPhone_number(phoneNum);
-        /** To decrypt use the decrypt() method that jasypt provides */
-
-        userRepository.save(newUser);
-        return "redirect:/register?success";
     }
 
     private boolean checkForEmpty(User newUser) {
@@ -133,15 +144,12 @@ public class UserController {
         return matcher.matches();
     }
 
-    private Boolean userRoleValidator(String userLevel){
-        return userLevel.equals("ADMIN");
-    }
-
-    private Boolean passwordValidator(String password){
+    private Boolean passwordValidator(String password, String lastname, String firstname){
         String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()?])(?=\\S+$).{8,20}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(password);
-        return matcher.matches();
+        return matcher.matches() && !password.contains(lastname) && !password.contains(firstname) && password.length()>8
+                && !commonStringPool.ifContainCommonString(password);
     }
 
     private Boolean ppsValidator(String ppsNumber){

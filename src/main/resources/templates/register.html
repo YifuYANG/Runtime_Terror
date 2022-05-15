@@ -59,7 +59,8 @@
                             <div th:if="${param.passwordError}">
                                    <div class="alert alert-info">
                                           Passwords must be between 8 and 20 characters long, an upper case character, 
-                                          a number and a special character must appear atleast once. Please try again!
+                                          a number and a special character must appear atleast once, must not contain
+                                          current user real name or common string. Please try again!
                                    </div>
                             </div>
                             <div th:if="${param.ppsnError}">

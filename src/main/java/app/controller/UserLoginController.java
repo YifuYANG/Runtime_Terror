@@ -3,6 +3,7 @@ package app.controller;
 import app.bean.TokenPool;
 import app.constant.UserLevel;
 import app.dao.AttemptLimitationDao;
+import app.exception.CustomErrorException;
 import app.model.Ip_logs;
 import app.model.User;
 import app.repository.IpAddressRepository;
@@ -38,53 +39,57 @@ public class UserLoginController {
     //adding encoder method
     @PostMapping("/login")
     @ResponseBody
-    public Map<String, Object> login(@RequestBody LoginForm loginForm, HttpServletRequest request){
+    public Map<String, Object> login(@RequestBody LoginForm loginForm, HttpServletRequest request) throws CustomErrorException {
 
-        Map<String, Object> map = new HashMap<>(3);
-        User user = userRepository.findByUserEmail(loginForm.getUserEmail());
-        Ip_logs ip_log = ipAddressRepository.findByIpAddress(request.getRemoteAddr());
-        if(user == null){
-            map.put("status", "fail");
-            map.put("msg", "Account does not exist.");
-        } else if(loginForm.getPassword().equals("")){
-            map.put("status", "fail");
-            map.put("msg", "Password filed should not be empty.");
-        } else if (!emailValidator(loginForm.getUserEmail())){
-            map.put("status", "fail");
-            map.put("msg", "Wrong email type.");
-        } else if(ip_log!=null && !attemptLimitationDao.unlockWhenTimeExpired(ip_log)){
-            map.put("status", "fail");
-            map.put("msg", "Too many request, your ip has been baned for 20 mines");
-        } else {
-             if(!encoder.matches(loginForm.getPassword(),user.getPassword())){
-                 if(ip_log==null) {
-                     ipAddressRepository.save(new Ip_logs(request.getMethod(),request.getRequestURI(),request.getRemoteAddr()));
-                 } else {
-                     if(!ip_log.isAccountLocked()){
-                         attemptLimitationDao.resetAttemptsAfterPeriodOfTime(ip_log);
-                         attemptLimitationDao.setLastAttempt(ip_log);
-                     }
-                     if(ip_log.getFailedAttempts()>2){
-                         attemptLimitationDao.lock(ip_log);
-                     } else {
-                         attemptLimitationDao.increaseFailedAttempts(ip_log);
-                     }
-                 }
+        try {
+            Map<String, Object> map = new HashMap<>(3);
+            User user = userRepository.findByUserEmail(loginForm.getUserEmail());
+            Ip_logs ip_log = ipAddressRepository.findByIpAddress(request.getRemoteAddr());
+            if(user == null){
                 map.put("status", "fail");
-                map.put("msg", "Wrong password.");
+                map.put("msg", "Account does not exist.");
+            } else if(loginForm.getPassword().equals("")){
+                map.put("status", "fail");
+                map.put("msg", "Password filed should not be empty.");
+            } else if (!emailValidator(loginForm.getUserEmail())){
+                map.put("status", "fail");
+                map.put("msg", "Wrong email type.");
+            } else if(ip_log!=null && !attemptLimitationDao.unlockWhenTimeExpired(ip_log)){
+                map.put("status", "fail");
+                map.put("msg", "Too many request, your ip has been baned for 20 mines");
             } else {
-                String token = tokenPool.generateToken();
-                tokenPool.login(user.getUserId(), token);
-                log.info("Token issued to " + user.getUserId());
-                if(ip_log!=null){
-                    attemptLimitationDao.resetFailedAttempts(ip_log);
+                if(!encoder.matches(loginForm.getPassword(),user.getPassword())){
+                    if(ip_log==null) {
+                        ipAddressRepository.save(new Ip_logs(request.getMethod(),request.getRequestURI(),request.getRemoteAddr()));
+                    } else {
+                        if(!ip_log.isAccountLocked()){
+                            attemptLimitationDao.resetAttemptsAfterPeriodOfTime(ip_log);
+                            attemptLimitationDao.setLastAttempt(ip_log);
+                        }
+                        if(ip_log.getFailedAttempts()>2){
+                            attemptLimitationDao.lock(ip_log);
+                        } else {
+                            attemptLimitationDao.increaseFailedAttempts(ip_log);
+                        }
+                    }
+                    map.put("status", "fail");
+                    map.put("msg", "Wrong password.");
+                } else {
+                    String token = tokenPool.generateToken();
+                    tokenPool.login(user.getUserId(), token);
+                    log.info("Token issued to " + user.getUserId());
+                    if(ip_log!=null){
+                        attemptLimitationDao.resetFailedAttempts(ip_log);
+                    }
+                    map.put("status", "success");
+                    map.put("token", token);
+                    map.put("role", getUserRoleByToken(token).name());
                 }
-                map.put("status", "success");
-                map.put("token", token);
-                map.put("role", getUserRoleByToken(token).name());
             }
+            return map;
+        } catch (Exception e){
+            throw new CustomErrorException("some error happened");
         }
-        return map;
     }
 
     @GetMapping("/sign_out")
