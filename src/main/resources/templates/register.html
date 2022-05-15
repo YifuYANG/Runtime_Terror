@@ -73,6 +73,12 @@
                                    </div>
                             </div>
 
+                            <div th:if="${param.phoneNumberError}">
+                                   <div class="alert alert-info">
+                                          Phone number must be 10 digits.
+                                   </div>
+                            </div>
+
                             <h1>Registration</h1>
                             <form name="form" th:action="@{/register}" th:object="${user}" method="POST">
 

@@ -21,7 +21,6 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -72,7 +71,6 @@ public class UserController {
         if(!ppsValidator(newUser.getPPS_number())){
             return "redirect:/register?ppsnError";
         }
-
         if(findByPPSN(newUser.getPPS_number())) {
             return "redirect:/register?ppsnExistError";
         }
@@ -86,13 +84,10 @@ public class UserController {
         if(!passwordValidator(newUser.getPassword()) && newUser.getPassword().length()<8){
             return "redirect:/register?passwordError";
         }
-        if(userRoleValidator(newUser.getUserLevel().toString())){
-            /**
-            I am not sure if I did correctly, I am validating data at back side so attacker wouldn't register admin account using burp
-             */
-            return "redirect:/register?registrationError";
-        }
 
+        if(!phoneValidator(newUser.getPhone_number())) {
+            return "redirect:/register?phoneNumberError";
+        }
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         /**
          PPS, data of birth, and phone number should be encoded before storing in to DB
@@ -148,6 +143,12 @@ public class UserController {
         return matcher.matches();
     }
 
+    private Boolean phoneValidator(long phoneNumber){
+        String regex = "^[0-9]{10}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(String.valueOf(phoneNumber));
+        return matcher.matches();
+    }
     private List<String> findAllPPSN(){
         return userRepository.findAllPPS();
     }
