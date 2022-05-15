@@ -1,6 +1,7 @@
 package app.controller;
 
 import app.annotation.access.RestrictUserAccess;
+import app.bean.CommonStringPool;
 import app.bean.TokenPool;
 import app.constant.UserLevel;
 import app.exception.UserNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.jasypt.util.text.StrongTextEncryptor;
 
 import javax.validation.Valid;
+import java.io.FileNotFoundException;
 import java.math.BigInteger;
 import java.text.ParseException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -49,13 +51,16 @@ public class UserController {
     @Autowired
     private StrongIntegerNumberEncryptor phoneNumberEncoder;
 
+    @Autowired
+    private CommonStringPool commonStringPool;
+
     @ModelAttribute("user")
     public User user() {
         return new User();
     }
 
     @GetMapping
-    public String showRegistrationForm(Model model) {
+    public String showRegistrationForm(Model model) throws FileNotFoundException {
         return "register";
     }
     // Create a new User
@@ -90,7 +95,7 @@ public class UserController {
         if(result.hasErrors() || !emailValidator(newUser.getEmail())){
             return "redirect:/register?tryAgain";
         }
-        if(!passwordValidator(newUser.getPassword()) && newUser.getPassword().length()<8){
+        if(!passwordValidator(newUser.getPassword(),newUser.getLast_name(),newUser.getFirst_name())){
             return "redirect:/register?passwordError";
         }
         if(!phoneValidator(newUser.getPhone_number())) {
@@ -133,15 +138,12 @@ public class UserController {
         return matcher.matches();
     }
 
-    private Boolean userRoleValidator(String userLevel){
-        return userLevel.equals("ADMIN");
-    }
-
-    private Boolean passwordValidator(String password){
+    private Boolean passwordValidator(String password, String lastname, String firstname){
         String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()?])(?=\\S+$).{8,20}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(password);
-        return matcher.matches();
+        return matcher.matches() && !password.contains(lastname) && !password.contains(firstname) && password.length()>8
+                && !commonStringPool.ifContainCommonString(password);
     }
 
     private Boolean ppsValidator(String ppsNumber){

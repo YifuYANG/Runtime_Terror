@@ -59,7 +59,8 @@
                             <div th:if="${param.passwordError}">
                                    <div class="alert alert-info">
                                           Passwords must be between 8 and 20 characters long, an upper case character, 
-                                          a number and a special character must appear atleast once. Please try again!
+                                          a number and a special character must appear at least once,
+                                          and not contain current user real name or common string. Please try again!
                                    </div>
                             </div>
                             <div th:if="${param.ppsnError}">
@@ -146,17 +147,6 @@
                                           <p class="error-message" th:each="error : ${#fields.errors('phone_number')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
-                                   <!-- <div class="form-group"
-                                          th:classappend="${#fields.hasErrors('userLevel')}? 'has-error':''">
-                                          <label for="ADMIN" class="control-label">Administrator</label>
-                                          <input type="radio" id="admin" class="form-radio" th:field="*{userLevel}"
-                                                 value="ADMIN" />
-                                          <label for="CLIENT" class="control-label">Client</label>
-                                          <input type="radio" id="client" class="form-radio" th:field="*{userLevel}"
-                                                 value="CLIENT" />
-                                          <p class="error-message" th:each="error : ${#fields.errors('userLevel')}"
-                                                 th:text="${error}">Validation error</p>
-                                   </div> -->
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('email')}? 'has-error':''">
                                           <label for="email" class="control-label">E-mail</label>
@@ -166,41 +156,17 @@
                                           <p class="error-message" th:each="error : ${#fields.errors('email')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
-                                   <!-- <div class="form-group"
-                                          th:classappend="${#fields.hasErrors('confirmEmail')}? 'has-error':''">
-                                          <label for="confirmEmail" class="control-label">Confirm e-mail</label>
-                                          <input id="confirmEmail" class="form-control" th:field="*{confirmEmail}" />
-                                          <p class="error-message" th:each="error : ${#fields.errors('confirmEmail')}"
-                                                 th:text="${error}">Validation error</p>
-                                   </div> -->
+
                                    <div class="form-group"
                                           th:classappend="${#fields.hasErrors('password')}? 'has-error':''">
                                           <label for="password" class="control-label">Password</label>
                                           <input id="password" minlength="8" class="form-control" type="password"
                                                  th:field="*{password}" required
                                                  pattern="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()?])(?=\S+$).{8,20}$"
-                                                 title="Must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters"/>
+                                                 title="Must contain at least one  number and one uppercase and lowercase letter, at least 8 or more characters, and not contain current user real name or common string"/>
                                           <p class="error-message" th:each="error : ${#fields.errors('password')}"
                                                  th:text="${error}">Validation error</p>
                                    </div>
-                                   <!-- <div class="form-group"
-                                          th:classappend="${#fields.hasErrors('confirmPassword')}? 'has-error':''">
-                                          <label for="confirmPassword" class="control-label">Confirm password</label>
-                                          <input id="confirmPassword" class="form-control" type="password"
-                                                 th:field="*{confirmPassword}" />
-                                          <p class="error-message"
-                                                 th:each="error : ${#fields.errors('confirmPassword')}"
-                                                 th:text="${error}">Validation error</p>
-                                   </div> -->
-                                   <!-- <div class="form-group"
-                                          th:classappend="${#fields.hasErrors('terms')}? 'has-error':''">
-                                          <input id="terms" type="checkbox" th:field="*{terms}" />
-                                          <label class="control-label" for="terms">
-                                                 I agree with the <a href="#">terms and conditions</a> for Registration.
-                                          </label>
-                                          <p class="error-message" th:each="error : ${#fields.errors('terms')}"
-                                                 th:text="${error}">Validation error</p>
-                                   </div> -->
                                    <br>
                                    <div class="form-group">
                                           <button type="submit" class="btn btn-success"
@@ -216,7 +182,6 @@
        </div>
 
        <script type="text/javascript" th:src="@{/webjars/jquery/3.2.1/jquery.min.js/}"></script>
-       <!-- <script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script> -->
        <br>
 </body>
 
