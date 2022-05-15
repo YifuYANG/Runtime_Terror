@@ -68,6 +68,14 @@ public class UserController {
         if(existing != null){
             result.rejectValue("Email", null, "An account already exists for this email");
         }
+        if(!specialCharacterFilter(newUser.getFirst_name()) || !specialCharacterFilter(newUser.getLast_name())){
+            return "redirect:/register?usernameError";
+        }
+
+        if(!specialCharacterFilter(newUser.getNationality())){
+            return "redirect:/register?nationalityError";
+        }
+
         if(!ppsValidator(newUser.getPPS_number())){
             return "redirect:/register?ppsnError";
         }
@@ -88,6 +96,7 @@ public class UserController {
         if(!phoneValidator(newUser.getPhone_number())) {
             return "redirect:/register?phoneNumberError";
         }
+
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         /**
          PPS, data of birth, and phone number should be encoded before storing in to DB
@@ -147,6 +156,13 @@ public class UserController {
         String regex = "^[0-9]{10}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(String.valueOf(phoneNumber));
+        return matcher.matches();
+    }
+
+    private Boolean specialCharacterFilter(String username){
+        String regex = "^[^\\\\<>]*$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(username);
         return matcher.matches();
     }
     private List<String> findAllPPSN(){
