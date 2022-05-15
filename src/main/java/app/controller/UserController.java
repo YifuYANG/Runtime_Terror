@@ -4,6 +4,7 @@ import app.annotation.access.RestrictUserAccess;
 import app.bean.CommonStringPool;
 import app.bean.TokenPool;
 import app.constant.UserLevel;
+import app.exception.AuthenticationException;
 import app.exception.UserNotFoundException;
 import app.model.User;
 import app.repository.UserRepository;
@@ -65,60 +66,65 @@ public class UserController {
     }
     // Create a new User
     @PostMapping
-    public String RegisterUser(@ModelAttribute("newUser") User newUser, BindingResult result) throws ParseException {
-        newUser.setUserLevel(UserLevel.CLIENT);
+    public String RegisterUser(@ModelAttribute("newUser") User newUser, BindingResult result) throws AuthenticationException {
+        try {
+            newUser.setUserLevel(UserLevel.CLIENT);
 
-        if(checkForEmpty(newUser)){
-            return "redirect:/register?empty";
-        }
-        User existing = userRepository.findByUserEmail(newUser.getEmail());
-        if(existing != null){
-            result.rejectValue("Email", null, "An account already exists for this email");
-        }
-        if(!specialCharacterFilter(newUser.getFirst_name()) || !specialCharacterFilter(newUser.getLast_name())){
-            return "redirect:/register?usernameError";
+            if(checkForEmpty(newUser)){
+                return "redirect:/register?empty";
+            }
+            User existing = userRepository.findByUserEmail(newUser.getEmail());
+            if(existing != null){
+                result.rejectValue("Email", null, "An account already exists for this email");
+            }
+            if(!specialCharacterFilter(newUser.getFirst_name()) || !specialCharacterFilter(newUser.getLast_name())){
+                return "redirect:/register?usernameError";
+            }
+
+            if(!specialCharacterFilter(newUser.getNationality())){
+                return "redirect:/register?nationalityError";
+            }
+
+            if(!ppsValidator(newUser.getPPS_number())){
+                return "redirect:/register?ppsnError";
+            }
+            if(findByPPSN(newUser.getPPS_number())) {
+                return "redirect:/register?ppsnExistError";
+            }
+            if(!emailValidator(newUser.getEmail())){
+                return "redirect:/register?invalidEmail";
+            }
+            if(result.hasErrors() || !emailValidator(newUser.getEmail())){
+                return "redirect:/register?tryAgain";
+            }
+            if(!passwordValidator(newUser.getPassword(),newUser.getLast_name(),newUser.getFirst_name())){
+                return "redirect:/register?passwordError";
+            }
+            if(!phoneValidator(newUser.getPhone_number())) {
+                return "redirect:/register?phoneNumberError";
+            }
+            if(!dobValidator(newUser.getDate_of_birth())){
+                return "redirect:/register?dobError";
+            }
+
+            newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+            /**
+             PPS, data of birth, and phone number should be encoded before storing in to DB
+             */
+            String dob = String.valueOf(newUser.getDate_of_birth());
+            newUser.setDate_of_birth(dobEncoder.encrypt(dob));
+            newUser.setPPS_number(ppsnEncoder.encrypt((newUser.getPPS_number())));
+            BigInteger bigPhoneNumber = BigInteger.valueOf(newUser.getPhone_number());
+            long phoneNum = phoneNumberEncoder.encrypt(bigPhoneNumber).longValue();
+            newUser.setPhone_number(phoneNum);
+            /** To decrypt use the decrypt() method that jasypt provides */
+
+            userRepository.save(newUser);
+            return "redirect:/register?success";
+        } catch (Exception e){
+            throw new AuthenticationException("some error happened");
         }
 
-        if(!specialCharacterFilter(newUser.getNationality())){
-            return "redirect:/register?nationalityError";
-        }
-
-        if(!ppsValidator(newUser.getPPS_number())){
-            return "redirect:/register?ppsnError";
-        }
-        if(findByPPSN(newUser.getPPS_number())) {
-            return "redirect:/register?ppsnExistError";
-        }
-        if(!emailValidator(newUser.getEmail())){
-            return "redirect:/register?invalidEmail";
-        }
-        if(result.hasErrors() || !emailValidator(newUser.getEmail())){
-            return "redirect:/register?tryAgain";
-        }
-        if(!passwordValidator(newUser.getPassword(),newUser.getLast_name(),newUser.getFirst_name())){
-            return "redirect:/register?passwordError";
-        }
-        if(!phoneValidator(newUser.getPhone_number())) {
-            return "redirect:/register?phoneNumberError";
-        }
-        if(!dobValidator(newUser.getDate_of_birth())){
-            return "redirect:/register?dobError";
-        }
-
-        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-        /**
-         PPS, data of birth, and phone number should be encoded before storing in to DB
-         */
-        String dob = String.valueOf(newUser.getDate_of_birth());
-        newUser.setDate_of_birth(dobEncoder.encrypt(dob));
-        newUser.setPPS_number(ppsnEncoder.encrypt((newUser.getPPS_number())));
-        BigInteger bigPhoneNumber = BigInteger.valueOf(newUser.getPhone_number());
-        long phoneNum = phoneNumberEncoder.encrypt(bigPhoneNumber).longValue();
-        newUser.setPhone_number(phoneNum);
-        /** To decrypt use the decrypt() method that jasypt provides */
-
-        userRepository.save(newUser);
-        return "redirect:/register?success";
     }
 
     private boolean checkForEmpty(User newUser) {
