@@ -14,12 +14,8 @@ function Login(){
                     var result = JSON.parse(xhr.responseText);
                     if (result.status === 'success') {
                         sessionStorage.setItem("token", JSON.stringify(result.token));
-                        if(result.role !== 'ADMIN')
-                            window.location.href = "/"
-                        else {
-                            let adminHref = "/admin/" + getToken()
-                            window.location.href = adminHref
-                        }
+                        sessionStorage.setItem("role", JSON.stringify(result.role));
+                        window.location.href = "/"
                     } else {
                         alert(result.msg);
                     }
