@@ -64,7 +64,6 @@ public class UserController {
         if(checkForEmpty(newUser)){
             return "redirect:/register?empty";
         }
-
         User existing = userRepository.findByUserEmail(newUser.getEmail());
         if(existing != null){
             result.rejectValue("Email", null, "An account already exists for this email");
@@ -72,21 +71,23 @@ public class UserController {
         if(!ppsValidator(newUser.getPPS_number())){
             return "redirect:/register?ppsnError";
         }
-
         if(findByPPSN(newUser.getPPS_number())) {
             return "redirect:/register?ppsnExistError";
         }
-
         if(!emailValidator(newUser.getEmail())){
             return "redirect:/register?invalidEmail";
         }
-        if (result.hasErrors() || !emailValidator(newUser.getEmail())){
+        if(result.hasErrors() || !emailValidator(newUser.getEmail())){
             return "redirect:/register?tryAgain";
         }
         if(!passwordValidator(newUser.getPassword())){
             return "redirect:/register?passwordError";
         }
+        if(!phoneNumberValidator(newUser.getPhone_number())){
+            return "redirect:/register?phoneNumberError";
+        }
         if(userRoleValidator(newUser.getUserLevel().toString())){
+            System.out.println("here3");
             /**
             I am not sure if I did correctly, I am validating data at back side so attacker wouldn't register admin account using burp
              */
@@ -108,16 +109,11 @@ public class UserController {
     }
 
     private boolean checkForEmpty(User newUser) {
-        if( newUser.getFirst_name() == null || newUser.getLast_name()==null||
-            newUser.getNationality() == null || newUser.getDate_of_birth() ==null||
-            newUser.getPPS_number() == null || newUser.getPhone_number() == 0||
-            newUser.getEmail()==null || newUser.getUserLevel()==null||
-            newUser.getPassword() == null)
-        {
-            return true;
-        }else {
-            return false;
-        }
+        return newUser.getFirst_name() == null || newUser.getLast_name() == null ||
+                newUser.getNationality() == null || newUser.getDate_of_birth() == null ||
+                newUser.getPPS_number() == null || newUser.getPhone_number() == 0 ||
+                newUser.getEmail() == null || newUser.getUserLevel() == null ||
+                newUser.getPassword() == null;
     }
 
     //validate email type at back end in case of attack may bypass front side
@@ -148,6 +144,11 @@ public class UserController {
         return matcher.matches();
     }
 
+    private Boolean phoneNumberValidator(long phoneNumber){
+        int len = String.valueOf(phoneNumber).length();
+        return len == 10 || len == 9;
+    }
+
     private List<String> findAllPPSN(){
         return userRepository.findAllPPS();
     }
@@ -156,11 +157,12 @@ public class UserController {
         List<String> ppsn_list = findAllPPSN();
         Collections.reverse(ppsn_list);
         for (String ppsn:ppsn_list){
-            if (ppsnEncoder.decrypt(ppsn).equals(ppsNumber)){
+            if(!ppsValidator(ppsn) || !(ppsn.getClass().getName().equals("in"))) continue;
+            String check = ppsnEncoder.decrypt(ppsn);
+            if (check.equals(ppsNumber)){
                 return true;
             }
         }
-
         return false;
     }
     // Get All Users
