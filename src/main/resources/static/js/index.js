@@ -2,10 +2,16 @@ function indexLoading() {
     if(isLoggedIn()) {
         document.getElementById("loginButton").style.display = "none"
         document.getElementById("activityButton").style.display = "inline"
+        if(sessionStorage.getItem("role")==="\"ADMIN\""){
+            document.getElementById("adminButton").style.display = "inline"
+        } else {
+            document.getElementById("adminButton").style.display = "none"
+        }
     }
     else {
         document.getElementById("loginButton").style.display = "inline"
         document.getElementById("activityButton").style.display = "none"
+        document.getElementById("adminButton").style.display = "none"
     }
 }
 
@@ -28,7 +34,6 @@ function getToken() {
 
 function isLoggedIn() {
     return getToken() != null;
-
 }
 
 function submitAppointmentForm() {
@@ -89,6 +94,7 @@ function logout() {
     xhr.setRequestHeader("token", getToken())
     xhr.onload = function () {
         sessionStorage.removeItem("token")
+        sessionStorage.removeItem("role")
         document.location.reload()
     }
     xhr.send();
@@ -124,6 +130,17 @@ function renderVis() {
             vegaEmbed("#vis", spec)
         }
         else alert("Data Visualisation chart is unavailable, HTTP status code = " + this.status)
+    }
+    xhr.send()
+}
+
+function iAmAdmin() {
+    if(!isLoggedIn()) alert("Please login first!")
+    let xhr = new XMLHttpRequest()
+    xhr.open("GET", "/admin", false)
+    xhr.setRequestHeader("token", getToken())
+    xhr.onload = function () {
+        document.body.innerHTML = this.responseText
     }
     xhr.send()
 }
