@@ -4,6 +4,7 @@ import app.annotation.access.RestrictUserAccess;
 import app.bean.TokenPool;
 import app.constant.UserLevel;
 import app.dao.ForumPostDao;
+import app.exception.AuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,25 +25,33 @@ public class ForumController {
     private ForumPostDao forumPostDao;
 
     @GetMapping
-    public String forumPage(Model model) {
-        model.addAttribute("posts", forumPostDao.findAllToVO());
-        return "forum";
+    public String forumPage(Model model) throws AuthenticationException {
+        try {
+            model.addAttribute("posts", forumPostDao.findAllToVO());
+            return "forum";
+        }catch (Exception e){
+            throw new AuthenticationException("some error happened");
+        }
     }
 
     @PostMapping("/post")
     @RestrictUserAccess(requiredLevel = UserLevel.ANY)
     @ResponseBody
     public String createPost(@RequestHeader("token") String token,
-                             @RequestBody Map<String, String> data) {
-        Long userId = tokenPool.getUserIdByToken(token);
-        if(!forumPostDao.checkCoolDown(userId)) {
-            log.warn("User ID = " + userId + " attempted to post question during cool down");
-            return "You just posted a question less than 1 minute ago.";
+                             @RequestBody Map<String, String> data) throws AuthenticationException {
+        try {
+            Long userId = tokenPool.getUserIdByToken(token);
+            if(!forumPostDao.checkCoolDown(userId)) {
+                log.warn("User ID = " + userId + " attempted to post question during cool down");
+                return "You just posted a question less than 1 minute ago.";
+            }
+            String content = data.get("content");
+            forumPostDao.save(userId, content);
+            log.info("User ID = " + userId + " created new post: " + content);
+            return "Your question has been submitted successfully!";
+        } catch (Exception e){
+            throw new AuthenticationException("some error happened");
         }
-        String content = data.get("content");
-        forumPostDao.save(userId, content);
-        log.info("User ID = " + userId + " created new post: " + content);
-        return "Your question has been submitted successfully!";
     }
 
 }
