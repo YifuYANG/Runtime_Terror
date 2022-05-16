@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
 @ControllerAdvice
-public class AuthenticationExceptionAdvice {
+public class CustomErrorExceptionAdvice {
 
     @ExceptionHandler(value = CustomErrorException.class)
     public ModelAndView exceptionHandler(CustomErrorException e){
